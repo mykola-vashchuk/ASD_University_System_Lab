@@ -2,6 +2,7 @@ package ua.ukma.edu.domain;
 
 import lombok.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
