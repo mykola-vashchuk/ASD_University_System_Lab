@@ -12,7 +12,7 @@ public class Department {
 
     public Department() {
     }
-    //Без списків, бо вони створяться самі
+
     public Department(String id, String name, String location, Teacher head) {
         this.id = id;
         this.name = name;

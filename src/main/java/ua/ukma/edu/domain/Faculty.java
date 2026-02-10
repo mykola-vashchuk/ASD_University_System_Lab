@@ -9,16 +9,18 @@ public class Faculty {
     private String contacts; //контактна інформація
     private Teacher dean; //декан факультету
     private List<Department> departments = new ArrayList<>(); //кафедри факультету
-
+    private List<Student> students = new ArrayList<>();
     public Faculty() {
     }
-    //Без списку, бо він створиться сам
-    public Faculty(String id, String fullName, String shortName, String contacts, Teacher dean, List<Department> departments) {
+
+    public Faculty(String id, String fullName, String shortName, String contacts, List<Department> departments) {
         this.id = id;
         this.fullName = fullName;
         this.shortName = shortName;
         this.contacts = contacts;
-        this.dean = dean;
+        if (departments != null) {
+            this.departments = departments;
+        }
     }
 
     public String getId() {
@@ -61,9 +63,7 @@ public class Faculty {
         this.dean = dean;
     }
 
-    public List<Department> getDepartments() {
-        return departments;
-    }
+    public List<Department> getDepartments() {return departments;}
 
     public void setDepartments(List<Department> departments) {
         this.departments = departments;
@@ -83,7 +83,7 @@ public class Faculty {
     }
 
     @Override
-    public String toString() {
+   public String toString() {
         return "Faculty{" +
                 "id='" + id + '\'' +
                 ", fullName='" + fullName + '\'' +
