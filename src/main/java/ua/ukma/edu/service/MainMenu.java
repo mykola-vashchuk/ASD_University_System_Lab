@@ -249,7 +249,7 @@ public class MainMenu {
         }
         for (int i = 0; i < dep.getStudents().size(); i++) {
             Student s = dep.getStudents().get(i);
-            System.out.println((i + 1) + ". " + s.getFirstName() + " " + s.getLastName() + "");
+            System.out.println((i + 1) + ". " + s.getFirstName() + " " + s.getLastName());
         }
         System.out.print("Обрати номер студента: ");
         int idx = readInt(1, dep.getStudents().size());
