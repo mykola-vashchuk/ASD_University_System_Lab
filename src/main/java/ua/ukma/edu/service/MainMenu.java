@@ -1,38 +1,34 @@
-
 package ua.ukma.edu.service;
 
 import ua.ukma.edu.domain.*;
 import java.util.UUID;
-
 import java.util.*;
 
 public class MainMenu {
 
+    private final Scanner scanner;
+    private final University university;
+    private final UniversityService service;
 
-    private static final Scanner scanner = new Scanner(System.in);
+    public MainMenu(University university, UniversityService service) {
+        this.university = university;
+        this.service = service;
+        this.scanner = new Scanner(System.in);
+    }
 
-
-    private static final University university = new University(
-
-            "Національний університет Києво-Могилянська академія",
-            "НаУКМА",
-            "Київ",
-            "Григорія Сковороди 2"
-    );
-
-    //main menu
-    public static void main(String[] args) {
+    public void show() {
+        System.out.println("------------------------------------------------------------------------");
+        System.out.println("Вітаємо у DigiUni Registry-системі обліку студентів та викладачів НаУКМА");
+        System.out.println("------------------------------------------------------------------------");
         boolean running = true;
         while (running) {
-            System.out.println("------------------------------------------------------------------------");
-            System.out.println("Вітаємо у DigiUni Registry-системі обліку студентів та викладачів НаУКМА");
-            System.out.println("------------------------------------------------------------------------");
             System.out.println("Головне меню");
             System.out.println("1. Робота з університетом");
             System.out.println("2. Робота з факультетом");
             System.out.println("3. Робота з кафедрою");
             System.out.println("4. Робота зі студентом");
             System.out.println("5. Робота з викладачем");
+            System.out.println("6. Пошук та звіти");
             System.out.println("0. Вихід");
             System.out.print("Обрати: ");
             String choice = scanner.nextLine().trim();
@@ -42,6 +38,7 @@ public class MainMenu {
                 case "3" -> departmentMenu();
                 case "4" -> studentMenu();
                 case "5" -> teacherMenu();
+                case "6" -> searchAndReportsMenu();
                 case "0" -> running = false;
                 default -> System.out.println("Невірний вибір. Введіть коректне значення.");
             }
@@ -50,7 +47,7 @@ public class MainMenu {
     }
 
     //university
-    private static void universityMenu() {
+    private void universityMenu() {
         System.out.println("Університет: " + university);
         System.out.println("Факультети: ");
         for (Faculty faculty : university.getFaculties()) {
@@ -59,7 +56,7 @@ public class MainMenu {
     }
 
     //faculty
-    private static void facultyMenu() {
+    private void facultyMenu() {
         while (true) {
             System.out.println("Меню факультету");
             System.out.println("1. Створити факультет");
@@ -81,7 +78,7 @@ public class MainMenu {
         }
     }
 
-    private static void createFaculty() {
+    private void createFaculty() {
         System.out.print("Назва факультету: ");
         String fullName = readNonEmpty();
         System.out.print("Скорочена назва: ");
@@ -93,7 +90,7 @@ public class MainMenu {
         System.out.println("Створено.");
     }
 
-    private static void editFaculty() {
+    private void editFaculty() {
         Faculty faculty = selectFaculty();
         if (faculty == null) return;
         System.out.print("Нова назва факультету (поточна: " + faculty.getFullName() + "): ");
@@ -108,14 +105,14 @@ public class MainMenu {
         System.out.println("Відредаговано.");
     }
 
-    private static void deleteFaculty() {
+    private void deleteFaculty() {
         Faculty faculty = selectFaculty();
         if (faculty == null) return;
         university.getFaculties().remove(faculty);
         System.out.println("Видалено.");
     }
 
-    private static Faculty selectFaculty() {
+    private Faculty selectFaculty() {
         if (university.getFaculties().isEmpty()) {
             System.out.println("Ще немає факультетів.");
             return null;
@@ -129,7 +126,7 @@ public class MainMenu {
     }
 
     //department
-    private static void departmentMenu() {
+    private void departmentMenu() {
         Faculty faculty = selectFaculty();
         if (faculty == null) return;
         while (true) {
@@ -150,7 +147,7 @@ public class MainMenu {
         }
     }
 
-    private static void createDepartment(Faculty faculty) {
+    private void createDepartment(Faculty faculty) {
         System.out.print("Назва кафедри: ");
         String name = readNonEmpty();
         System.out.print("Локація: ");
@@ -160,7 +157,7 @@ public class MainMenu {
         System.out.println("Створено.");
     }
 
-    private static void editDepartment(Faculty faculty) {
+    private void editDepartment(Faculty faculty) {
         Department dep = selectDepartment(faculty);
         if (dep == null) return;
         System.out.print("Нова назва (поточна: " + dep.getName() + "): ");
@@ -172,14 +169,14 @@ public class MainMenu {
         System.out.println("Відредаговано.");
     }
 
-    private static void deleteDepartment(Faculty faculty) {
+    private void deleteDepartment(Faculty faculty) {
         Department dep = selectDepartment(faculty);
         if (dep == null) return;
         faculty.getDepartments().remove(dep);
         System.out.println("Видалено.");
     }
 
-    private static Department selectDepartment(Faculty faculty) {
+    private Department selectDepartment(Faculty faculty) {
         if (faculty.getDepartments().isEmpty()) {
             System.out.println("Ще немає кафедр.");
             return null;
@@ -193,7 +190,7 @@ public class MainMenu {
     }
 
     //student
-    private static void studentMenu() {
+    private void studentMenu() {
         Department dep = selectAnyDepartment();
         if (dep == null) return;
         while (true) {
@@ -213,7 +210,7 @@ public class MainMenu {
         }
     }
 
-    private static void addStudent(Department dep) {
+    private void addStudent(Department dep) {
         System.out.print("Ім'я: "); String firstName = readNonEmpty();
         System.out.print("Прізвище: "); String lastName = readNonEmpty();
         System.out.print("По батькові: "); String patronymic = readNonEmpty();
@@ -228,7 +225,7 @@ public class MainMenu {
         System.out.println("Додано.");
     }
 
-    private static void editStudent(Department dep) {
+    private void editStudent(Department dep) {
         Student student = selectStudent(dep);
         if (student == null) return;
         System.out.print("Нове ім'я (поточне: " + student.getFirstName() + "): ");
@@ -238,14 +235,14 @@ public class MainMenu {
         System.out.println("Відредаговано.");
     }
 
-    private static void deleteStudent(Department dep) {
+    private void deleteStudent(Department dep) {
         Student student = selectStudent(dep);
         if (student == null) return;
         dep.getStudents().remove(student);
         System.out.println("Видалено.");
     }
 
-    private static Student selectStudent(Department dep) {
+    private Student selectStudent(Department dep) {
         if (dep.getStudents().isEmpty()) {
             System.out.println("Ще немає студентів.");
             return null;
@@ -259,14 +256,14 @@ public class MainMenu {
         return dep.getStudents().get(idx - 1);
     }
 
-    private static Department selectAnyDepartment() {
+    private Department selectAnyDepartment() {
         Faculty faculty = selectFaculty();
         if (faculty == null) return null;
         return selectDepartment(faculty);
     }
 
     //teacher
-    private static void teacherMenu() {
+    private void teacherMenu() {
         Department dep = selectAnyDepartment();
         if (dep == null) return;
         while (true) {
@@ -287,7 +284,7 @@ public class MainMenu {
         }
     }
 
-    private static void addTeacher(Department dep) {
+    private void addTeacher(Department dep) {
         System.out.print("Ім'я: ");
         String firstName = readNonEmpty();
         System.out.print("Прізвище: ");
@@ -306,7 +303,7 @@ public class MainMenu {
         System.out.println("Додано: " + teacher.getFirstName() + " " + teacher.getLastName());
     }
 
-    private static void editTeacher(Department dep) {
+    private void editTeacher(Department dep) {
         Teacher teacher = selectTeacher(dep);
         if (teacher == null) return;
         System.out.print("Нове ім'я (поточне: " + teacher.getFirstName() + "): ");
@@ -318,14 +315,14 @@ public class MainMenu {
         System.out.println("Відредаговано.");
     }
 
-    private static void deleteTeacher(Department dep) {
+    private void deleteTeacher(Department dep) {
         Teacher teacher = selectTeacher(dep);
         if (teacher == null) return;
         dep.getTeachers().remove(teacher);
         System.out.println("Видалено: " + teacher.getFirstName() + " " + teacher.getLastName());
     }
 
-    private static Teacher selectTeacher(Department dep) {
+    private Teacher selectTeacher(Department dep) {
         if (dep.getTeachers().isEmpty()) {
             System.out.println("Ще немає викладачів.");
             return null;
@@ -339,8 +336,81 @@ public class MainMenu {
         return dep.getTeachers().get(idx - 1);
     }
 
+    private void searchAndReportsMenu(){
+        while (true) {
+            System.out.println("\n Пошук та Звіти ");
+            System.out.println("1. Знайти студента (за Прізвищем, Курсом або Групою)");
+            System.out.println("2. Звіт: Всі студенти за курсами (від 1 до 6)");
+            System.out.println("0. Назад");
+            System.out.print("Обрати: ");
+
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1" -> findStudent();
+                case "2" -> printAllStudentsSortedByCourse();
+                case "0" -> { return; }
+                default -> System.out.println("Невірний вибір.");
+            }
+        }
+    }
+
+    private void findStudent(){
+        System.out.println("\nКритерій пошуку:");
+        System.out.println("1. Прізвище");
+        System.out.println("2. Курс");
+        System.out.println("3. Група");
+        System.out.print("-> ");
+        String type = scanner.nextLine().trim();
+
+        List<Student> results = new  ArrayList<>();
+
+        switch (type){
+            case "1" -> {
+                System.out.print("Введіть прізвище: ");
+                results = service.findStudentByLastName(readNonEmpty());
+            }
+            case "2" -> {
+                System.out.print("Введіть курс: ");
+                results = service.findStudentByCourse(readInt(1,6));
+            }
+            case "3" -> {
+                System.out.println("Введіть групу: ");
+                results = service.findStudentByGroup(readNonEmpty());
+            }
+            default -> { System.out.println("Невірний вибір."); return; }
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("Нікого не знайдено.");
+        } else {
+            System.out.println("\n Знайдено (" + results.size() +"):");
+            for (Student s : results) {
+                System.out.println(" - " + s.getFirstName() + " " + s.getLastName() +
+                        " | Група: " + s.getGroup() +
+                        " | Курс: " + s.getStudyYear()
+                );
+
+            }
+        }
+    }
+
+    private void printAllStudentsSortedByCourse(){
+        System.out.println("\nЗвіт: Всі студенти за курсами:");
+        List<Student> all = service.getStudentsSortedByYear();
+        if (all.isEmpty()) {
+            System.out.println("Студентів немає.");
+        } else {
+            for (Student s : all) {
+                System.out.println("Курс " + s.getStudyYear() + ": " +
+                        s.getLastName() + " " + s.getFirstName() +
+                        " (" +  s.getGroup() + ")"
+                );
+            }
+        }
+    }
+
     //input validation
-    private static String readNonEmpty() {
+    private String readNonEmpty() {
         while (true) {
             String input = scanner.nextLine().trim();
             if (!input.isEmpty())
@@ -349,7 +419,7 @@ public class MainMenu {
         }
     }
 
-    private static int readInt(int min, int max) {
+    private int readInt(int min, int max) {
         while (true) {
             try {
                 int val = Integer.parseInt(scanner.nextLine().trim());
