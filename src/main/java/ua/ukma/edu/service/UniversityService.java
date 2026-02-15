@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UniversityService {
-    private University university;
+    private final University university;
 
     public UniversityService(University university) {
         this.university = university;
@@ -29,13 +29,16 @@ public class UniversityService {
     }
 
     // 1. Пошук за Прізвищем
-    public List<Student> findStudentByLastName(String lastName) {
+    public List<Student> findStudentByLnFnMn(String query) {
         List<Student> results = new ArrayList<>();
-        if (lastName == null || lastName.trim().isEmpty()) return results;
+        if (query == null || query.trim().isEmpty()) return results;
 
-        String searchFor = lastName.toLowerCase().trim();
+        String searchFor = query.toLowerCase().trim();
         for (Student s : getAllStudents()) {
-            if (s.getLastName().toLowerCase().contains(searchFor)) {
+            boolean matchLast = s.getLastName().toLowerCase().contains(searchFor);
+            boolean matchFirst = s.getFirstName().toLowerCase().contains(searchFor);
+            boolean matchPatronymic = s.getPatronymic().toLowerCase().contains(searchFor);
+            if ( matchLast || matchFirst || matchPatronymic) {
                 results.add(s);
             }
         }

@@ -17,9 +17,11 @@ public class MainMenu {
     }
 
     public void show() {
+
         System.out.println("------------------------------------------------------------------------");
         System.out.println("Вітаємо у DigiUni Registry-системі обліку студентів та викладачів НаУКМА");
         System.out.println("------------------------------------------------------------------------");
+
         boolean running = true;
         while (running) {
             System.out.println("Головне меню");
@@ -356,7 +358,7 @@ public class MainMenu {
 
     private void findStudent(){
         System.out.println("\nКритерій пошуку:");
-        System.out.println("1. Прізвище");
+        System.out.println("1. Ім'я/Прізвище/По-Батькові");
         System.out.println("2. Курс");
         System.out.println("3. Група");
         System.out.print("-> ");
@@ -366,8 +368,8 @@ public class MainMenu {
 
         switch (type){
             case "1" -> {
-                System.out.print("Введіть прізвище: ");
-                results = service.findStudentByLastName(readNonEmpty());
+                System.out.print("Введіть Ім'я/Прізвище/По-Батькові: ");
+                results = service.findStudentByLnFnMn(readNonEmpty());
             }
             case "2" -> {
                 System.out.print("Введіть курс: ");
@@ -385,13 +387,27 @@ public class MainMenu {
         } else {
             System.out.println("\n Знайдено (" + results.size() +"):");
             for (Student s : results) {
-                System.out.println(" - " + s.getFirstName() + " " + s.getLastName() +
-                        " | Група: " + s.getGroup() +
-                        " | Курс: " + s.getStudyYear()
-                );
-
+                printFullStudentInfo(s);
             }
         }
+    }
+
+    private void printFullStudentInfo(Student s) {
+        System.out.println(" ===== Особисті дані ======================");
+        System.out.println(" - ПІБ: " + s.getFirstName() + " " + s.getLastName() + " " +  s.getPatronymic());
+        System.out.println(" - Дата народження: " + s.getBirthDate());
+        System.out.println(" - Телефон: " + s.getPhoneNumber());
+        System.out.println(" - Email: " + s.getEmail());
+        System.out.println(" ===== Навчальні дані =====================");
+        System.out.println(" - Залікова: " + s.getStudentId());
+        System.out.println(" - Курс: " + s.getStudyYear());
+        System.out.println(" - Група: " + s.getGroup());
+        System.out.println(" - Форма навчання: " + s.getStudyForm());
+        System.out.println(" - Статус: " + s.getStudentStatus());
+        System.out.println(" - Рік вступу: " + s.getAdmissionYear());
+        System.out.println(" ==========================================");
+        System.out.println(" - ID: " + s.getId());
+        System.out.println(" ==========================================");
     }
 
     private void printAllStudentsSortedByCourse(){
@@ -400,11 +416,14 @@ public class MainMenu {
         if (all.isEmpty()) {
             System.out.println("Студентів немає.");
         } else {
+
+            int currentYear = 0;
             for (Student s : all) {
-                System.out.println("Курс " + s.getStudyYear() + ": " +
-                        s.getLastName() + " " + s.getFirstName() +
-                        " (" +  s.getGroup() + ")"
-                );
+                if (s.getStudyYear() != currentYear) {
+                    currentYear = s.getStudyYear();
+                    System.out.println("\n ======== " + currentYear + " КУРС ==========================");
+                }
+                printFullStudentInfo(s);
             }
         }
     }
