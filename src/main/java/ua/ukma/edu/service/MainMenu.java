@@ -362,7 +362,7 @@ public class MainMenu {
         System.out.print("-> ");
         String type = scanner.nextLine().trim();
 
-        List<Student> results = new  ArrayList<>();
+        List<Student> results;
 
         switch (type){
             case "1" -> {
