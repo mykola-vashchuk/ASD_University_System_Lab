@@ -1,14 +1,18 @@
 package ua.ukma.edu.service;
 
 import ua.ukma.edu.domain.*;
+import ua.ukma.edu.repository.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class UniversityService {
     private final University university;
+    private final Repository<Student, String> studentRepository;
 
-    public UniversityService(University university) {
+    public UniversityService(University university, Repository<Student, String> studentRepository) {
         this.university = university;
+        this.studentRepository = studentRepository;
     }
 
     //збирає всіх студентів з усіх кафедр в один список

@@ -1,6 +1,8 @@
 package ua.ukma.edu;
 
 import ua.ukma.edu.domain.*;
+import ua.ukma.edu.repository.Repository;
+import ua.ukma.edu.repository.StudentRepository;
 import ua.ukma.edu.service.MainMenu;
 import ua.ukma.edu.service.UniversityService;
 
@@ -89,8 +91,14 @@ public class Main {
         ipz.getStudents().add(student3);
         System.out.println("Додано студента: " + student3.getLastName() + " | Додано до кафедри: " + ipz.getName());
 
-        UniversityService service = new UniversityService(naukma);
+        Repository<Student, String> studentRepository = new StudentRepository();
+        UniversityService service = new UniversityService(naukma, studentRepository);
         MainMenu menu = new MainMenu(naukma, service);
+
+        studentRepository.save(student);
+        studentRepository.save(student2);
+        studentRepository.save(student3);
+
         menu.show();
     }
 }
