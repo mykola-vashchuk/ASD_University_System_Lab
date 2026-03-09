@@ -1,8 +1,10 @@
 package ua.ukma.edu.service;
 
 import ua.ukma.edu.domain.*;
+import ua.ukma.edu.exception.EntityNotFoundException;
 import ua.ukma.edu.repository.Repository;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,21 +17,14 @@ public class UniversityService {
         this.studentRepository = studentRepository;
     }
 
-    //збирає всіх студентів з усіх кафедр в один список
+    //
     public List<Student> getAllStudents() {
-        List<Student> allStudents = new ArrayList<>();
-        if (university.getFaculties() != null) {
-            for (Faculty faculty : university.getFaculties()) {
-                if (faculty.getDepartments() != null) {
-                    for (Department department : faculty.getDepartments()) {
-                        if (department.getStudents() != null) {
-                            allStudents.addAll(department.getStudents());
-                        }
-                    }
-                }
-            }
-        }
-        return allStudents;
+        return studentRepository.findAll();
+    }
+
+    public Student findById(String id){
+        return studentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Студента з ID: " + id +" не знайдено."));
     }
 
     // 1. Пошук за Прізвищем
