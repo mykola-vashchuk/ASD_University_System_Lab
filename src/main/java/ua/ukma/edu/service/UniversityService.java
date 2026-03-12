@@ -18,9 +18,7 @@ public class UniversityService {
         return university;
     }
 
-    public String getFullName() {
-        return university.getShortName();
-    }
+    public String getFullName() { return university.getFullName(); }
 
     public String getShortName() {
         return university.getShortName();
