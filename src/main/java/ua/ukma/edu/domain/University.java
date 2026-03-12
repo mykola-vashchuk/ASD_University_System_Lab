@@ -82,4 +82,5 @@ public class University {
                 ", facultiesCount=" + faculties.size() +
                 '}';
     }
+
 }

@@ -29,6 +29,10 @@ public class Teacher extends Person {
         this.hireDate = hireDate;
         this.rate = rate;
     }
+
+    public Teacher(String string, String firstName, String lastName, String patronymic, Object o, String s, String s1, Position position, ScientificDegree degree, AcademicTitle title, double rate) {
+    }
+
     public Position getPosition() {
         return position;
     }
