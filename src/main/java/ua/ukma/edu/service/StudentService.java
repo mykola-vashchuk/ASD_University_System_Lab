@@ -7,6 +7,7 @@ import ua.ukma.edu.repository.Repository;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class StudentService {
     private final Repository<Student, String> studentRepository;
@@ -19,8 +20,12 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
+    public Optional<Student> findOptionalById(String id) {
+        return studentRepository.findById(id);
+    }
+
     public Student findById(String id) {
-        return studentRepository.findById(id)
+        return findOptionalById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Студента з ID: " + id + " не знайдено."));
     }
 

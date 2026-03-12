@@ -22,14 +22,12 @@ public class StudentRepository extends InMemoryRepository<Student, String> {
 
     public List<Student> sortedByCourseThenName() {
         List<Student> result = new ArrayList<>(storage.values());
-        Collections.sort(result, new Comparator<Student>() {
-            @Override public int compare(Student a, Student b) {
-                int byCourse = Integer.compare(a.getStudyYear(), b.getStudyYear());
-                if (byCourse != 0) return byCourse;
-                int byLast = a.getLastName().compareToIgnoreCase(b.getLastName());
-                if (byLast != 0) return byLast;
-                return a.getFirstName().compareToIgnoreCase(b.getFirstName());
-            }
+        result.sort((a, b) -> {
+            int byCourse = Integer.compare(a.getStudyYear(), b.getStudyYear());
+            if (byCourse != 0) return byCourse;
+            int byLast = a.getLastName().compareToIgnoreCase(b.getLastName());
+            if (byLast != 0) return byLast;
+            return a.getFirstName().compareToIgnoreCase(b.getFirstName());
         });
         return result;
     }
