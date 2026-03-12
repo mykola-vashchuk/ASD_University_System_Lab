@@ -1,30 +1,48 @@
 package ua.ukma.edu.repository;
 
 import ua.ukma.edu.domain.Student;
-
 import java.util.*;
 
-public class StudentRepository implements Repository<Student, String>{
-
-    private final Map<String, Student> storage  = new HashMap<>();
+public class StudentRepository extends InMemoryRepository<Student, String> {
 
     @Override
-    public void save(Student entity) {
-        storage.put(entity.getStudentId(), entity);
+    protected String getId(Student entity) { return entity.getId(); }
+
+    public List<Student> findByGroup(String group) {
+        List<Student> result = new ArrayList<>();
+        for (Student s : storage.values()) if (s.getGroup().equalsIgnoreCase(group)) result.add(s);
+        return result;
     }
 
-    @Override
-    public Optional<Student> findById(String id) {
-        return Optional.ofNullable(storage.get(id));
+    public List<Student> findByCourse(int course) {
+        List<Student> result = new ArrayList<>();
+        for (Student s : storage.values()) if (s.getStudyYear() == course) result.add(s);
+        return result;
     }
 
-    @Override
-    public List<Student> findAll() {
-        return new ArrayList<>(storage.values());
+    public List<Student> sortedByCourseThenName() {
+        List<Student> result = new ArrayList<>(storage.values());
+        Collections.sort(result, new Comparator<Student>() {
+            @Override public int compare(Student a, Student b) {
+                int byCourse = Integer.compare(a.getStudyYear(), b.getStudyYear());
+                if (byCourse != 0) return byCourse;
+                int byLast = a.getLastName().compareToIgnoreCase(b.getLastName());
+                if (byLast != 0) return byLast;
+                return a.getFirstName().compareToIgnoreCase(b.getFirstName());
+            }
+        });
+        return result;
     }
 
-    @Override
-    public void deleteById(String id) {
-        storage.remove(id);
+    public List<Student> sortedAlphabetically() {
+        List<Student> result = new ArrayList<>(storage.values());
+        Collections.sort(result, new Comparator<Student>() {
+            @Override public int compare(Student a, Student b) {
+                int byLast = a.getLastName().compareToIgnoreCase(b.getLastName());
+                if (byLast != 0) return byLast;
+                return a.getFirstName().compareToIgnoreCase(b.getFirstName());
+            }
+        });
+        return result;
     }
 }
