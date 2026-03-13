@@ -2,6 +2,7 @@ package ua.ukma.edu.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.time.Period;
 
 public abstract class Person {
     private String id;
@@ -44,6 +45,11 @@ public abstract class Person {
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
 
+    public int getAge(){
+        LocalDate bDate = getBirthDate();
+        if(bDate == null) return 0;
+        return Period.between(bDate, LocalDate.now()).getYears();
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,6 +71,7 @@ public abstract class Person {
                 ", lastName='" + lastName + '\'' +
                 ", patronymic='" + patronymic + '\'' +
                 ", birthDate=" + birthDate +
+                ", age=" + getAge() +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
