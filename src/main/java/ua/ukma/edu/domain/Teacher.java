@@ -2,6 +2,7 @@ package ua.ukma.edu.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.time.Period;
 
 public class Teacher extends Person {
     private Position position;//посада
@@ -73,6 +74,23 @@ public class Teacher extends Person {
         this.rate = rate;
     }
 
+    public int getExperienceYear(){
+        if (this.hireDate == null) return 0;
+        return Period.between(this.hireDate, LocalDate.now()).getYears();
+    }
+
+    @Override
+    public String toString() {
+        return "Teacher{" +
+                "position=" + position +
+                ", degree=" + degree +
+                ", academicTitle=" + academicTitle +
+                ", hireDate=" + hireDate +
+                ", experience=" + getExperienceYear() +
+                ", rate=" + rate +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -91,14 +109,4 @@ public class Teacher extends Person {
         return Objects.hash(super.hashCode(), position, degree, academicTitle, hireDate, rate);
     }
 
-    @Override
-    public String toString() {
-        return "Teacher{" +
-                "name='" + getFirstName() + " " + getLastName() + '\'' +
-                ", position=" + position +
-                ", degree=" + degree +
-                ", academicTitle=" + academicTitle +
-                ", rate=" + rate +
-                '}';
-    }
 }
