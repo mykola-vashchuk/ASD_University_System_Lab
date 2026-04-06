@@ -4,10 +4,7 @@ import ua.ukma.edu.domain.Student;
 import ua.ukma.edu.exception.EntityNotFoundException;
 import ua.ukma.edu.repository.Repository;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class StudentService {
     private final Repository<Student, String> studentRepository;
@@ -34,9 +31,9 @@ public class StudentService {
         String searchFor = query.toLowerCase().trim();
 
         return getAllStudents().stream()
-                .filter(s -> s.getLastName().toLowerCase().contains(searchFor) ||
-                        s.getFirstName().toLowerCase().contains(searchFor) ||
-                        s.getPatronymic().toLowerCase().contains(searchFor))
+                .filter(s -> s.getLastName().toLowerCase(Locale.ROOT).contains(searchFor) ||
+                        s.getFirstName().toLowerCase(Locale.ROOT).contains(searchFor) ||
+                        s.getPatronymic().toLowerCase(Locale.ROOT).contains(searchFor))
                 .toList();
     }
 
