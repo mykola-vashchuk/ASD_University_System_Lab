@@ -1,5 +1,7 @@
 package ua.ukma.edu;
 
+import ua.ukma.edu.authorization.AuthorizationService;
+import ua.ukma.edu.authorization.User;
 import ua.ukma.edu.domain.*;
 import ua.ukma.edu.repository.Repository;
 import ua.ukma.edu.repository.StudentRepository;
@@ -9,6 +11,8 @@ import ua.ukma.edu.service.UniversityService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
@@ -73,9 +77,38 @@ public class Main {
         // ініціалізація сервісів
         UniversityService universityService = new UniversityService(naukma);
         StudentService studentService = new StudentService(studentRepository);
+        AuthorizationService authorizationService = new AuthorizationService();
+        Scanner scanner = new Scanner(System.in);
+
+        User user = null;
+
+        int attempts = 3;
+        System.out.println("Кількість спроб: "+attempts);
+        while(user == null && attempts > 0){
+            System.out.print("Login: ");
+            String username = scanner.nextLine();
+            System.out.print("Password: ");
+            String password = scanner.nextLine();
+            Optional<User> optionalUser = authorizationService.login(username, password);
+
+            if(optionalUser.isPresent()){
+                user = optionalUser.get();
+            }
+            else{
+                attempts--;
+                System.out.println("Невірний login або password. Залишилось спроб: " + attempts);
+            }
+        }
+
+        if(user == null){
+            System.out.println("Кількість спроб вичерпана.");
+            return;
+        }
+
+        System.out.println("Авторизація успішна: " + user.getUsername() + " " + user.getRole());
 
         // передача сервісів у меню
-        MainMenu menu = new MainMenu(universityService, studentService);
+        MainMenu menu = new MainMenu(universityService, studentService, authorizationService, user);
         menu.show();
     }
 }

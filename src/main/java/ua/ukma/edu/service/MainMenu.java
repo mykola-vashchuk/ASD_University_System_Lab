@@ -1,6 +1,11 @@
 package ua.ukma.edu.service;
 
+import ua.ukma.edu.authorization.AuthorizationService;
+import ua.ukma.edu.authorization.Roles;
+import ua.ukma.edu.authorization.User;
 import ua.ukma.edu.domain.*;
+
+import java.time.LocalDate;
 import java.util.UUID;
 import java.util.List;
 import java.util.Scanner;
@@ -11,15 +16,32 @@ public class MainMenu {
     private final University university;
     private final UniversityService universityService;
     private final StudentService studentService;
+    private final AuthorizationService authorizationService;
+    private final User currentUser;
 
-    public MainMenu(UniversityService universityService, StudentService studentService) {
+    public MainMenu(UniversityService universityService, StudentService studentService,  AuthorizationService authorizationService, User currentUser) {
         this.universityService = universityService;
         this.university = universityService.getUniversity();
         this.studentService = studentService;
+        this.authorizationService = authorizationService;
+        this.currentUser = currentUser;
         this.scanner = new Scanner(System.in);
     }
 
-    public void show() {
+    private boolean hasAccess(Roles... role) {
+        for(Roles r: role){
+            if(currentUser.getRole().equals(r)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void deny(){
+        System.out.println("Ви не маєте доступу до цього меню.");
+    }
+
+    public boolean show() {
         System.out.println("------------------------------------------------------------------------");
         System.out.println("Вітаємо у DigiUni Registry-системі обліку студентів та викладачів НаУКМА");
         System.out.println("------------------------------------------------------------------------");
@@ -33,21 +55,89 @@ public class MainMenu {
             System.out.println("4. Робота зі студентом");
             System.out.println("5. Робота з викладачем");
             System.out.println("6. Пошук та звіти");
+            System.out.println("7. Користувачі");
             System.out.println("0. Вихід");
             System.out.print("Обрати: ");
             String choice = scanner.nextLine().trim();
             switch (choice) {
                 case "1" -> universityMenu();
-                case "2" -> facultyMenu();
-                case "3" -> departmentMenu();
-                case "4" -> studentMenu();
-                case "5" -> teacherMenu();
+                case "2" -> {
+                    if(hasAccess(Roles.ADMIN, Roles.MANAGER))
+                        facultyMenu();
+                    else deny();}
+                case "3" -> {
+                    if(hasAccess(Roles.ADMIN, Roles.MANAGER))
+                        departmentMenu();
+                    else deny();}
+                case "4" -> {
+                    if(hasAccess(Roles.ADMIN, Roles.MANAGER))
+                        studentMenu();
+                    else deny();}
+                case "5" -> {
+                    if(hasAccess(Roles.ADMIN, Roles.MANAGER))
+                        teacherMenu();
+                    else deny();}
                 case "6" -> searchAndReportsMenu();
+                case "7" -> {
+                    if(hasAccess(Roles.ADMIN))
+                        userMenu();
+                    else deny();}
                 case "0" -> running = false;
                 default -> System.out.println("Невірний вибір. Введіть коректне значення.");
             }
         }
         System.out.println("Завершено.");
+        return running;
+    }
+
+    private void userMenu() {
+        while (true) {
+            System.out.println("Користувачі");
+            System.out.println("1. Список");
+            System.out.println("2. Додати");
+            System.out.println("3. Видалити");
+            System.out.println("4. Змінити");
+            System.out.println("5. Блокувати");
+            System.out.println("6. Розблокувати");
+            System.out.println("0. Назад");
+            System.out.print("Обрати: ");
+
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1" -> authorizationService.getAllUsers().forEach(u -> System.out.println(u.getUsername() + " - " + u.getRole()));
+                case "2" -> {
+                    System.out.println("Login");
+                    String username =  scanner.nextLine();
+                    System.out.println("Password");
+                    String password =  scanner.nextLine();
+                    System.out.println("[0-USER 1-MANAGER 2-ADMIN]");
+                    Roles role = Roles.values()[Integer.parseInt(scanner.nextLine())];
+                    authorizationService.addUser(username, password, role);
+                }
+                case "3" -> {
+                    System.out.println("Login");
+                    authorizationService.removeUser(scanner.nextLine());
+                }
+                case "4" -> {
+                    System.out.println("Login");
+                    String username =  scanner.nextLine();
+                    System.out.println("[0-USER 1-MANAGER 2-ADMIN]");
+                    Roles role = Roles.values()[Integer.parseInt(scanner.nextLine())];
+                    authorizationService.changeUser(username, role);
+                }
+                case "5" -> {
+                    System.out.println("Login");
+                    authorizationService.blockUser(scanner.nextLine());
+                }
+                case "6" -> {
+                    System.out.println("Login");
+                    authorizationService.unblockUser(scanner.nextLine());
+                }
+                case "0" -> {
+                    return;
+                }
+            }
+        }
     }
 
     private void universityMenu() {
@@ -301,9 +391,10 @@ public class MainMenu {
         System.out.print("Вчене звання (0-3: NONE, SENIOR_RESEARCHER, DOCENT, PROFESSOR): ");
         AcademicTitle title = AcademicTitle.values()[readInt(0, AcademicTitle.values().length - 1)];
         double rate = 1.0;
-        Teacher teacher = new Teacher(UUID.randomUUID().toString(), firstName, lastName, patronymic, null, "", "", position, degree, title, rate);
+
+        Teacher teacher = new Teacher(UUID.randomUUID().toString(), firstName, lastName, patronymic, LocalDate.now(), "", "", position, degree, title, LocalDate.now(), rate);
         dep.getTeachers().add(teacher);
-        System.out.println("Додано: " + teacher.getFirstName() + " " + teacher.getLastName());
+        System.out.println("Додано.");
     }
 
     private void editTeacher(Department dep) {
