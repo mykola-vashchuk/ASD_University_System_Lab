@@ -1,9 +1,14 @@
 package ua.ukma.edu.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Student extends Person{
+@Setter
+@Getter
+public final class Student extends Person{
     private String studentId; //студентський квиток
     private String group; //група
     private StudyForm studyForm; //форма навчання
@@ -29,54 +34,6 @@ public class Student extends Person{
         this.studyForm = studyForm;
         this.studentStatus = studentStatus;
         this.studyYear = studyYear;
-        this.admissionYear = admissionYear;
-    }
-
-    public String getStudentId() {
-        return studentId;
-    }
-
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    public StudyForm getStudyForm() {
-        return studyForm;
-    }
-
-    public void setStudyForm(StudyForm studyForm) {
-        this.studyForm = studyForm;
-    }
-
-    public StudentStatus getStudentStatus() {
-        return studentStatus;
-    }
-
-    public void setStudentStatus(StudentStatus studentStatus) {
-        this.studentStatus = studentStatus;
-    }
-
-    public int getStudyYear() {
-        return studyYear;
-    }
-
-    public void setStudyYear(int studyYear) {
-        this.studyYear = studyYear;
-    }
-
-    public int getAdmissionYear() {
-        return admissionYear;
-    }
-
-    public void setAdmissionYear(int admissionYear) {
         this.admissionYear = admissionYear;
     }
 

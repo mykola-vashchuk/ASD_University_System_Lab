@@ -1,10 +1,15 @@
 package ua.ukma.edu.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.Objects;
 import java.time.Period;
 
-public abstract class Person {
+@Setter
+@Getter
+public abstract sealed class Person permits Student, Teacher {
     private String id;
     private String firstName;
     private String lastName;
@@ -23,27 +28,6 @@ public abstract class Person {
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    public String getPatronymic() { return patronymic; }
-    public void setPatronymic(String patronymic) { this.patronymic = patronymic; }
-
-    public LocalDate getBirthDate() { return birthDate; }
-    public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
 
     public int getAge(){
         LocalDate bDate = getBirthDate();

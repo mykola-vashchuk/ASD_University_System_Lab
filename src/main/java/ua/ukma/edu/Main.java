@@ -105,7 +105,7 @@ public class Main {
             return;
         }
 
-        System.out.println("Авторизація успішна: " + user.getUsername() + " " + user.getRole());
+        System.out.println("Авторизація успішна: " + user.username() + " " + user.role());
 
         // передача сервісів у меню
         MainMenu menu = new MainMenu(universityService, studentService, authorizationService, user);

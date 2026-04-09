@@ -1,6 +1,8 @@
 package ua.ukma.edu.service;
 
 import ua.ukma.edu.domain.Student;
+import ua.ukma.edu.dto.StudentDTO;
+import ua.ukma.edu.dto.StudentMapper;
 import ua.ukma.edu.exception.EntityNotFoundException;
 import ua.ukma.edu.repository.Repository;
 
@@ -26,37 +28,6 @@ public class StudentService {
                 .orElseThrow(() -> new EntityNotFoundException("Студента з ID: " + id + " не знайдено."));
     }
 
-    public List<Student> findStudentByLnFnMn(String query) {
-        if (query == null || query.trim().isEmpty()) return new ArrayList<>();
-        String searchFor = query.toLowerCase().trim();
-
-        return getAllStudents().stream()
-                .filter(s -> s.getLastName().toLowerCase(Locale.ROOT).contains(searchFor) ||
-                        s.getFirstName().toLowerCase(Locale.ROOT).contains(searchFor) ||
-                        s.getPatronymic().toLowerCase(Locale.ROOT).contains(searchFor))
-                .toList();
-    }
-
-    public List<Student> findStudentByCourse(int course) {
-        return getAllStudents().stream()
-                .filter(s -> s.getStudyYear() == course)
-                .toList();
-    }
-
-    public List<Student> findStudentByGroup(String group) {
-        if (group == null || group.trim().isEmpty()) return new ArrayList<>();
-
-        return getAllStudents().stream()
-                .filter(s -> s.getGroup().equalsIgnoreCase(group.trim()))
-                .toList();
-    }
-
-    public List<Student> getStudentsSortedByYear() {
-        return getAllStudents().stream()
-                .sorted(Comparator.comparingInt(Student::getStudyYear))
-                .toList();
-    }
-
     public void saveStudent(Student student) {
         studentRepository.save(student);
     }
@@ -65,4 +36,32 @@ public class StudentService {
         studentRepository.deleteById(id);
     }
 
+    public List<StudentDTO> findStudentByLnFnMn(String value){
+        return studentRepository.findAll().stream()
+                .filter(student ->
+                        student.getFirstName().equalsIgnoreCase(value)||
+                        student.getLastName().equalsIgnoreCase(value)||
+                        student.getPatronymic().equalsIgnoreCase(value)
+                )
+                .map(StudentMapper::toDTO)
+                .toList();
+    }
+    public List<StudentDTO> getStudentsSortedByYear(){
+        return studentRepository.findAll().stream()
+                .sorted((s1, s2) -> Integer.compare(s1.getStudyYear(), s2.getStudyYear()))
+                .map(StudentMapper::toDTO)
+                .toList();
+    }
+    public List<StudentDTO> findStudentByCourse(int course){
+        return studentRepository.findAll().stream()
+                .filter(student -> student.getStudyYear() == course)
+                .map(StudentMapper::toDTO)
+                .toList();
+    }
+    public List<StudentDTO> findStudentByGroup(String group){
+        return studentRepository.findAll().stream()
+                .filter(student -> student.getGroup().equalsIgnoreCase(group))
+                .map(StudentMapper::toDTO)
+                .toList();
+    }
 }

@@ -18,11 +18,11 @@ public class AuthorizationService {
         if (user == null) {
             return Optional.empty();
         }
-        if (user.isBlocked()) {
+        if (user.blocked()) {
             System.out.println("Користувач заблокований");
             return Optional.empty();
         }
-        if (user.getPassword().equals(password)) {
+        if (user.password().equals(password)) {
             return Optional.of(user);
         }
         return Optional.empty();
@@ -37,19 +37,19 @@ public class AuthorizationService {
     public void changeUser(String username, Roles role) {
         User user = users.get(username);
         if (user != null) {
-            user.setRole(role);
+            users.put(username, user.role(role));
         }
     }
     public void blockUser(String username) {
         User user = users.get(username);
         if (user != null) {
-            user.setBlocked(true);
+            users.put(username, user.blocked(true));
         }
     }
     public void unblockUser(String username) {
         User user = users.get(username);
         if (user != null) {
-            user.setBlocked(false);
+            users.put(username, user.blocked(false));
         }
     }
     public Collection<User> getAllUsers() {

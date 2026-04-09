@@ -1,10 +1,15 @@
 package ua.ukma.edu.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.Objects;
 import java.time.Period;
 
-public class Teacher extends Person {
+@Setter
+@Getter
+public final class Teacher extends Person {
     private Position position;//посада
     private ScientificDegree degree;//науковий ступінь
     private AcademicTitle academicTitle;//вчене звання
@@ -31,47 +36,7 @@ public class Teacher extends Person {
         this.rate = rate;
     }
 
-    public Teacher(String string, String firstName, String lastName, String patronymic, Object o, String s, String s1, Position position, ScientificDegree degree, AcademicTitle title, double rate) {
-    }
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public void setPosition(Position position) {
-        this.position = position;
-    }
-
-    public ScientificDegree getDegree() {
-        return degree;
-    }
-
-    public void setDegree(ScientificDegree degree) {
-        this.degree = degree;
-    }
-
-    public AcademicTitle getAcademicTitle() {
-        return academicTitle;
-    }
-
-    public void setAcademicTitle(AcademicTitle academicTitle) {
-        this.academicTitle = academicTitle;
-    }
-
-    public LocalDate getHireDate() {
-        return hireDate;
-    }
-
-    public void setHireDate(LocalDate hireDate) {
-        this.hireDate = hireDate;
-    }
-
-    public double getRate() {
-        return rate;
-    }
-
-    public void setRate(double rate) {
-        this.rate = rate;
+     public Teacher(String string, String firstName, String lastName, String patronymic, Object o, String s, String s1, Position position, ScientificDegree degree, AcademicTitle title, double rate) {
     }
 
     public int getExperienceYear(){

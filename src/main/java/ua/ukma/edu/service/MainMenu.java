@@ -4,6 +4,7 @@ import ua.ukma.edu.authorization.AuthorizationService;
 import ua.ukma.edu.authorization.Roles;
 import ua.ukma.edu.authorization.User;
 import ua.ukma.edu.domain.*;
+import ua.ukma.edu.dto.StudentDTO;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class MainMenu {
 
     private boolean hasAccess(Roles... role) {
         for(Roles r: role){
-            if(currentUser.getRole().equals(r)){
+            if(currentUser.role().equals(r)){
                 return true;
             }
         }
@@ -104,7 +105,7 @@ public class MainMenu {
 
             String choice = scanner.nextLine().trim();
             switch (choice) {
-                case "1" -> authorizationService.getAllUsers().forEach(u -> System.out.println(u.getUsername() + " - " + u.getRole()));
+                case "1" -> authorizationService.getAllUsers().forEach(u -> System.out.println(u.username() + " - " + u.role()));
                 case "2" -> {
                     System.out.println("Login");
                     String username =  scanner.nextLine();
@@ -456,7 +457,7 @@ public class MainMenu {
         System.out.print("-> ");
         String type = scanner.nextLine().trim();
 
-        List<Student> results;
+        List<StudentDTO> results;
 
         switch (type){
             case "1" -> {
@@ -478,40 +479,40 @@ public class MainMenu {
             System.out.println("Нікого не знайдено.");
         } else {
             System.out.println("\n Знайдено (" + results.size() +"):");
-            for (Student s : results) {
+            for (StudentDTO s : results) {
                 printFullStudentInfo(s);
             }
         }
     }
 
-    private void printFullStudentInfo(Student s) {
+    private void printFullStudentInfo(StudentDTO s) {
         System.out.println(" ===== Особисті дані ======================");
-        System.out.println(" - ПІБ: " + s.getFirstName() + " " + s.getLastName() + " " +  s.getPatronymic());
-        System.out.println(" - Дата народження: " + s.getBirthDate());
-        System.out.println(" - Телефон: " + s.getPhoneNumber());
-        System.out.println(" - Email: " + s.getEmail());
+        System.out.println(" - ПІБ: " + s.firstName() + " " + s.lastName() + " " +  s.patronymic());
+        System.out.println(" - Дата народження: " + s.birthDate());
+        System.out.println(" - Телефон: " + s.phoneNumber());
+        System.out.println(" - Email: " + s.email());
         System.out.println(" ===== Навчальні дані =====================");
-        System.out.println(" - Залікова: " + s.getStudentId());
-        System.out.println(" - Курс: " + s.getStudyYear());
-        System.out.println(" - Група: " + s.getGroup());
-        System.out.println(" - Форма навчання: " + s.getStudyForm());
-        System.out.println(" - Статус: " + s.getStudentStatus());
-        System.out.println(" - Рік вступу: " + s.getAdmissionYear());
+        System.out.println(" - Залікова: " + s.studentId());
+        System.out.println(" - Курс: " + s.studyYear());
+        System.out.println(" - Група: " + s.group());
+        System.out.println(" - Форма навчання: " + s.studyForm());
+        System.out.println(" - Статус: " + s.studentStatus());
+        System.out.println(" - Рік вступу: " + s.admissionYear());
         System.out.println(" ==========================================");
-        System.out.println(" - ID: " + s.getId());
+        System.out.println(" - ID: " + s.id());
         System.out.println(" ==========================================");
     }
 
     private void printAllStudentsSortedByCourse(){
         System.out.println("\nЗвіт: Всі студенти за курсами:");
-        List<Student> all = studentService.getStudentsSortedByYear();
+        List<StudentDTO> all = studentService.getStudentsSortedByYear();
         if (all.isEmpty()) {
             System.out.println("Студентів немає.");
         } else {
             int currentYear = 0;
-            for (Student s : all) {
-                if (s.getStudyYear() != currentYear) {
-                    currentYear = s.getStudyYear();
+            for (StudentDTO s : all) {
+                if (s.studyYear() != currentYear) {
+                    currentYear = s.studyYear();
                     System.out.println("\n ======== " + currentYear + " КУРС ==========================");
                 }
                 printFullStudentInfo(s);
