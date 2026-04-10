@@ -1,9 +1,12 @@
 package ua.ukma.edu.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.*;
 
-public class University {
+public class University implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String fullName;
     private String shortName;
     private String city;

@@ -3,13 +3,16 @@ package ua.ukma.edu.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.time.Period;
 
 @Setter
 @Getter
-public final class Teacher extends Person {
+public final class Teacher extends Person implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Position position;//посада
     private ScientificDegree degree;//науковий ступінь
     private AcademicTitle academicTitle;//вчене звання

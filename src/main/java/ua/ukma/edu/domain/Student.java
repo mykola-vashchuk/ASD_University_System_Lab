@@ -3,12 +3,15 @@ package ua.ukma.edu.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Setter
 @Getter
-public final class Student extends Person{
+public final class Student extends Person implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String studentId; //студентський квиток
     private String group; //група
     private StudyForm studyForm; //форма навчання

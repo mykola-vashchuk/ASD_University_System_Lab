@@ -1,8 +1,11 @@
 package ua.ukma.edu.domain;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Faculty {
+public class Faculty implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String id;
     private String fullName; //назва факультету
     private String shortName; //скорочена назва

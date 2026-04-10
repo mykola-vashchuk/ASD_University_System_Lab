@@ -5,6 +5,7 @@ import ua.ukma.edu.authorization.Roles;
 import ua.ukma.edu.authorization.User;
 import ua.ukma.edu.domain.*;
 import ua.ukma.edu.dto.StudentDTO;
+import ua.ukma.edu.persistence.UniversityStorage;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -19,13 +20,15 @@ public class MainMenu {
     private final StudentService studentService;
     private final AuthorizationService authorizationService;
     private final User currentUser;
+    private final UniversityStorage storage;
 
-    public MainMenu(UniversityService universityService, StudentService studentService,  AuthorizationService authorizationService, User currentUser) {
+    public MainMenu(UniversityService universityService, StudentService studentService,  AuthorizationService authorizationService, User currentUser, UniversityStorage storage) {
         this.universityService = universityService;
         this.university = universityService.getUniversity();
         this.studentService = studentService;
         this.authorizationService = authorizationService;
         this.currentUser = currentUser;
+        this.storage = storage;
         this.scanner = new Scanner(System.in);
     }
 
@@ -178,6 +181,7 @@ public class MainMenu {
         String contacts = readNonEmpty();
         Faculty faculty = new Faculty(UUID.randomUUID().toString(), fullName, shortName, contacts, new java.util.ArrayList<>());
         university.getFaculties().add(faculty);
+        persist();
         System.out.println("Створено.");
     }
 
@@ -193,6 +197,7 @@ public class MainMenu {
         faculty.setFullName(fullName);
         faculty.setShortName(shortName);
         faculty.setContacts(contacts);
+        persist();
         System.out.println("Відредаговано.");
     }
 
@@ -200,6 +205,7 @@ public class MainMenu {
         Faculty faculty = selectFaculty();
         if (faculty == null) return;
         university.getFaculties().remove(faculty);
+        persist();
         System.out.println("Видалено.");
     }
 
@@ -244,6 +250,7 @@ public class MainMenu {
         String location = readNonEmpty();
         Department department = new Department(UUID.randomUUID().toString(), name, location, new Teacher());
         faculty.getDepartments().add(department);
+        persist();
         System.out.println("Створено.");
     }
 
@@ -256,6 +263,7 @@ public class MainMenu {
         String location = readNonEmpty();
         dep.setName(name);
         dep.setLocation(location);
+        persist();
         System.out.println("Відредаговано.");
     }
 
@@ -263,6 +271,7 @@ public class MainMenu {
         Department dep = selectDepartment(faculty);
         if (dep == null) return;
         faculty.getDepartments().remove(dep);
+        persist();
         System.out.println("Видалено.");
     }
 
@@ -313,6 +322,7 @@ public class MainMenu {
 
         dep.getStudents().add(student);
         studentService.saveStudent(student); // Додано збереження в репозиторій
+        persist();
 
         System.out.println("Додано.");
     }
@@ -324,6 +334,7 @@ public class MainMenu {
         student.setFirstName(readNonEmpty());
         System.out.print("Нове прізвище (поточне: " + student.getLastName() + "): ");
         student.setLastName(readNonEmpty());
+        persist();
         System.out.println("Відредаговано.");
     }
 
@@ -333,6 +344,7 @@ public class MainMenu {
 
         dep.getStudents().remove(student);
         studentService.deleteStudentById(student.getStudentId()); // Додано видалення з репозиторію
+        persist();
 
         System.out.println("Видалено.");
     }
@@ -395,6 +407,7 @@ public class MainMenu {
 
         Teacher teacher = new Teacher(UUID.randomUUID().toString(), firstName, lastName, patronymic, LocalDate.now(), "", "", position, degree, title, LocalDate.now(), rate);
         dep.getTeachers().add(teacher);
+        persist();
         System.out.println("Додано.");
     }
 
@@ -407,6 +420,7 @@ public class MainMenu {
         teacher.setLastName(readNonEmpty());
         System.out.print("Нове по батькові (поточне: " + teacher.getPatronymic() + "): ");
         teacher.setPatronymic(readNonEmpty());
+        persist();
         System.out.println("Відредаговано.");
     }
 
@@ -414,8 +428,11 @@ public class MainMenu {
         Teacher teacher = selectTeacher(dep);
         if (teacher == null) return;
         dep.getTeachers().remove(teacher);
+        persist();
         System.out.println("Видалено: " + teacher.getFirstName() + " " + teacher.getLastName());
     }
+
+    private void persist() { storage.save(university); }
 
     private Teacher selectTeacher(Department dep) {
         if (dep.getTeachers().isEmpty()) {
@@ -486,7 +503,7 @@ public class MainMenu {
     }
 
     private void printFullStudentInfo(StudentDTO s) {
-        System.out.println(" ===== Особисті дані ======================");
+        System.out.println(" \n===== Особисті дані ======================");
         System.out.println(" - ПІБ: " + s.firstName() + " " + s.lastName() + " " +  s.patronymic());
         System.out.println(" - Дата народження: " + s.birthDate());
         System.out.println(" - Телефон: " + s.phoneNumber());

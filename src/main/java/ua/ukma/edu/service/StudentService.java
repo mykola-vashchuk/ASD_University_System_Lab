@@ -7,6 +7,8 @@ import ua.ukma.edu.exception.EntityNotFoundException;
 import ua.ukma.edu.repository.Repository;
 
 import java.util.*;
+import java.util.Locale;
+import java.util.Objects;
 
 public class StudentService {
     private final Repository<Student, String> studentRepository;
@@ -20,7 +22,8 @@ public class StudentService {
     }
 
     public Optional<Student> findOptionalById(String id) {
-        return studentRepository.findById(id);
+        String normalizedId = validateId(id);
+        return studentRepository.findById(normalizedId);
     }
 
     public Student findById(String id) {
@@ -29,19 +32,24 @@ public class StudentService {
     }
 
     public void saveStudent(Student student) {
+        validateStudent(student);
         studentRepository.save(student);
     }
 
     public void deleteStudentById(String id) {
-        studentRepository.deleteById(id);
+        String normalizedId = validateId(id);
+        studentRepository.deleteById(normalizedId);
     }
 
     public List<StudentDTO> findStudentByLnFnMn(String value){
+        if (value == null || value.trim().isEmpty()) return new ArrayList<>();
+        String searchFor = value.toLowerCase(Locale.ROOT).trim();
+
         return studentRepository.findAll().stream()
                 .filter(student ->
-                        student.getFirstName().equalsIgnoreCase(value)||
-                        student.getLastName().equalsIgnoreCase(value)||
-                        student.getPatronymic().equalsIgnoreCase(value)
+                        (student.getFirstName() != null && student.getFirstName().toLowerCase(Locale.ROOT).contains(searchFor)) ||
+                        (student.getLastName() != null && student.getLastName().toLowerCase(Locale.ROOT).contains(searchFor)) ||
+                        (student.getPatronymic() != null && student.getPatronymic().toLowerCase(Locale.ROOT).contains(searchFor))
                 )
                 .map(StudentMapper::toDTO)
                 .toList();
@@ -59,9 +67,36 @@ public class StudentService {
                 .toList();
     }
     public List<StudentDTO> findStudentByGroup(String group){
+        if (group == null || group.trim().isEmpty()) return new ArrayList<>();
+        String searchFor = group.toLowerCase(Locale.ROOT).trim();
+
         return studentRepository.findAll().stream()
-                .filter(student -> student.getGroup().equalsIgnoreCase(group))
+                .filter(student -> student.getGroup() != null && student.getGroup().toLowerCase(Locale.ROOT).contains(searchFor))
                 .map(StudentMapper::toDTO)
                 .toList();
+    }
+
+    private String validateId(String id) {
+        if (id == null || id.trim().isEmpty())
+            throw new IllegalArgumentException("ID студента не може бути порожнім.");
+        return id.trim();
+    }
+
+    private void validateStudent(Student student) {
+        Objects.requireNonNull(student, "Студент не може бути null.");
+        validateId(student.getId());
+
+        if (student.getFirstName() == null || student.getFirstName().trim().isEmpty())
+            throw new IllegalArgumentException("Ім'я студента не може бути порожнім.");
+        if (student.getLastName() == null || student.getLastName().trim().isEmpty())
+            throw new IllegalArgumentException("Прізвище студента не може бути порожнім.");
+        if (student.getGroup() == null || student.getGroup().trim().isEmpty())
+            throw new IllegalArgumentException("Група студента не може бути порожною.");
+        if (student.getStudyYear() <= 0 || student.getStudyYear() > 7)
+            throw new IllegalArgumentException("Курс навчання повинен бути від 1 до 7.");
+        if (student.getStudyForm() == null)
+            throw new IllegalArgumentException("Форма навчання не може бути null.");
+        if (student.getStudentStatus() == null)
+            throw new IllegalArgumentException("Статус студента не може бути null.");
     }
 }

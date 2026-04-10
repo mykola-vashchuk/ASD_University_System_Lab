@@ -1,8 +1,11 @@
 package ua.ukma.edu.domain;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Department {
+public class Department implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String id;
     private String name;
     private String location; // Кабінет/Локація

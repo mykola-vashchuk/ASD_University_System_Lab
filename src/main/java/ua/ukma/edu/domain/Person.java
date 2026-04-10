@@ -3,13 +3,16 @@ package ua.ukma.edu.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.time.Period;
 
 @Setter
 @Getter
-public abstract sealed class Person permits Student, Teacher {
+public abstract sealed class Person implements Serializable permits Student, Teacher {
+    private static final long serialVersionUID = 1L;
+
     private String id;
     private String firstName;
     private String lastName;
