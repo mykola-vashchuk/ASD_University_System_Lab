@@ -1,0 +1,53 @@
+2026-04-24 14:42:34 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:42:44 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:42:53 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username: {}
+2026-04-24 14:51:36 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:51:42 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 14:51:45 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 14:52:07 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:52:18 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:52:18 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:52:21 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - 
+2026-04-24 14:52:47 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:52:51 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - 
+2026-04-24 14:53:13 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:53:20 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 14:53:32 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний password
+2026-04-24 14:53:42 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:53:54 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 14:54:01 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний password
+2026-04-24 14:54:04 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 14:54:04 [main] INFO  ua.ukma.edu.Main - Завершення роботи.
+2026-04-24 14:54:12 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:54:16 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 14:54:27 [main] INFO  ua.ukma.edu.authorization.AuthorizationService - Авторизація успішна
+2026-04-24 14:54:27 [main] INFO  ua.ukma.edu.Main - Авторизація успішна: user USER
+2026-04-24 14:54:56 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:55:02 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний password
+2026-04-24 14:55:09 [main] INFO  ua.ukma.edu.authorization.AuthorizationService - Авторизація успішна
+2026-04-24 14:55:09 [main] INFO  ua.ukma.edu.Main - Авторизація успішна: admin ADMIN
+2026-04-24 14:55:56 [autosave-thread] INFO  ua.ukma.edu.persistence.AutoSaveService - Autosave completed.
+2026-04-24 14:56:07 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 14:56:16 [main] INFO  ua.ukma.edu.authorization.AuthorizationService - Авторизація успішна
+2026-04-24 14:56:16 [main] INFO  ua.ukma.edu.Main - Авторизація успішна: manager MANAGER
+2026-04-24 14:57:06 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:57:11 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 14:57:27 [main] INFO  ua.ukma.edu.authorization.AuthorizationService - Авторизація успішна
+2026-04-24 14:57:27 [main] INFO  ua.ukma.edu.Main - admin ADMIN
+2026-04-24 14:57:51 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Спроба входу заблокованим користувачем
+2026-04-24 14:58:00 [main] INFO  ua.ukma.edu.authorization.AuthorizationService - Авторизація успішна
+2026-04-24 14:58:00 [main] INFO  ua.ukma.edu.Main - admin ADMIN
+2026-04-24 14:58:20 [main] INFO  ua.ukma.edu.authorization.AuthorizationService - Авторизація успішна
+2026-04-24 14:58:20 [main] INFO  ua.ukma.edu.Main - user USER
+2026-04-24 14:59:49 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 14:59:55 [main] INFO  ua.ukma.edu.authorization.AuthorizationService - Авторизація успішна
+2026-04-24 14:59:55 [main] INFO  ua.ukma.edu.Main - user USER
+2026-04-24 15:00:00 [main] INFO  ua.ukma.edu.Main - Завантажено університет: НаУКМА
+2026-04-24 15:00:07 [main] INFO  ua.ukma.edu.authorization.AuthorizationService - Авторизація успішна
+2026-04-24 15:00:07 [main] INFO  ua.ukma.edu.Main - user USER
+2026-04-24 15:00:21 [main] INFO  ua.ukma.edu.authorization.AuthorizationService - Авторизація успішна
+2026-04-24 15:00:21 [main] INFO  ua.ukma.edu.Main - admin ADMIN
+2026-04-24 15:00:33 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 15:00:35 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 15:00:36 [main] WARN  ua.ukma.edu.authorization.AuthorizationService - Невірний username
+2026-04-24 15:00:36 [main] INFO  ua.ukma.edu.Main - Завершення роботи.

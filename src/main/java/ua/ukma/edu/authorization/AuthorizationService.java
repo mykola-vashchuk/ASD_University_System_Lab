@@ -4,8 +4,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AuthorizationService {
+    private static final Logger logger = LoggerFactory.getLogger(AuthorizationService.class);
     private final Map<String, User> users = new HashMap<>();
 
     public AuthorizationService() {
@@ -16,15 +19,18 @@ public class AuthorizationService {
     public Optional<User> login(String username, String password) {
         User user = users.get(username);
         if (user == null) {
+            logger.warn("Невірний username");
             return Optional.empty();
         }
         if (user.blocked()) {
-            System.out.println("Користувач заблокований");
+            logger.warn("Спроба входу заблокованим користувачем");
             return Optional.empty();
         }
         if (user.password().equals(password)) {
+            logger.info("Авторизація успішна");
             return Optional.of(user);
         }
+        logger.warn("Невірний password");
         return Optional.empty();
     }
 

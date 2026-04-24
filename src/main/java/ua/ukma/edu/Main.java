@@ -18,12 +18,15 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
     public static void main(String[] args) {
         UniversityStorage storage = new UniversityStorage();
         University naukma = storage.loadOrDefault(Main::createDefaultUniversity);
-        System.out.println("Завантажено університет: " + naukma.getShortName());
+        logger.info("Завантажено університет: " + naukma.getShortName());
 
         // ініціалізація репозиторію зі студентами з поточного стану університету
         Repository<Student, String> studentRepository = new StudentRepository();
@@ -59,10 +62,10 @@ public class Main {
 
             if(user == null) {
                 autoSaveService.stop();
-                System.out.println("Завершення роботи.");
+                logger.info("Завершення роботи.");
                 break;
             }
-            System.out.println("Авторизація успішна: " + user.username() + " " + user.role());
+            logger.info(user.username() + " " + user.role());
             MainMenu menu = new MainMenu(universityService, studentService, teacherService, authorizationService, user, autoSaveService);
             boolean logout = menu.show();
             if (!logout) {
@@ -89,7 +92,7 @@ public class Main {
             }
             else{
                 attempts--;
-                System.out.println("Невірний login або password. Залишилось спроб: " + attempts);
+                System.out.println("Залишилось спроб: " + attempts);
             }
         }
 
