@@ -5,6 +5,7 @@ import ua.ukma.edu.authorization.Roles;
 import ua.ukma.edu.authorization.User;
 import ua.ukma.edu.domain.*;
 import ua.ukma.edu.dto.StudentDTO;
+import ua.ukma.edu.persistence.AutoSaveService;
 import ua.ukma.edu.persistence.UniversityStorage;
 
 import java.time.LocalDate;
@@ -21,14 +22,16 @@ public class MainMenu {
     private final AuthorizationService authorizationService;
     private final User currentUser;
     private final UniversityStorage storage;
+    private final AutoSaveService autoSaveService;
 
-    public MainMenu(UniversityService universityService, StudentService studentService,  AuthorizationService authorizationService, User currentUser, UniversityStorage storage) {
+    public MainMenu(UniversityService universityService, StudentService studentService, AuthorizationService authorizationService, User currentUser, UniversityStorage storage, AutoSaveService autoSaveService) {
         this.universityService = universityService;
         this.university = universityService.getUniversity();
         this.studentService = studentService;
         this.authorizationService = authorizationService;
         this.currentUser = currentUser;
         this.storage = storage;
+        this.autoSaveService = autoSaveService;
         this.scanner = new Scanner(System.in);
     }
 
@@ -437,7 +440,9 @@ public class MainMenu {
         System.out.println("Видалено: " + teacher.getFirstName() + " " + teacher.getLastName());
     }
 
-    private void persist() { storage.save(university); }
+    private void persist() {
+        autoSaveService.markDirty();
+    }
 
     private Teacher selectTeacher(Department dep) {
         if (dep.getTeachers().isEmpty()) {

@@ -3,6 +3,7 @@ package ua.ukma.edu;
 import ua.ukma.edu.authorization.AuthorizationService;
 import ua.ukma.edu.authorization.User;
 import ua.ukma.edu.domain.*;
+import ua.ukma.edu.persistence.AutoSaveService;
 import ua.ukma.edu.persistence.UniversityStorage;
 import ua.ukma.edu.repository.Repository;
 import ua.ukma.edu.repository.StudentRepository;
@@ -36,19 +37,23 @@ public class Main {
         UniversityService universityService = new UniversityService(naukma);
         StudentService studentService = new StudentService(studentRepository);
         AuthorizationService authorizationService = new AuthorizationService();
+        AutoSaveService autoSaveService = new AutoSaveService(storage, universityService::getUniversity, 30);
+        autoSaveService.start();
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
             User user = login(scanner, authorizationService);
 
             if(user == null) {
+                autoSaveService.stop();
                 System.out.println("Завершення роботи.");
                 break;
             }
             System.out.println("Авторизація успішна: " + user.username() + " " + user.role());
-            MainMenu menu = new MainMenu(universityService, studentService, authorizationService, user, storage);
+            MainMenu menu = new MainMenu(universityService, studentService, authorizationService, user, storage, autoSaveService);
             boolean logout = menu.show();
             if (!logout) {
+                autoSaveService.stop();
                 break;
             }
         }
