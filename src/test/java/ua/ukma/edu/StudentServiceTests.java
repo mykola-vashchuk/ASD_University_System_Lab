@@ -170,7 +170,7 @@ public class StudentServiceTests {
                 LocalDate.of(2000, 1, 1),
                 "test@example.com", "+380123456789",
                 UUID.randomUUID().toString(),
-                "1", StudyForm.BUDGET, StudentStatus.ACTIVE, 10, 2023
+                "1", StudyForm.BUDGET, StudentStatus.ACTIVE, 7, 2023
         );
         
         assertThrows(IllegalArgumentException.class, () -> studentService.saveStudent(student));

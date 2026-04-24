@@ -110,8 +110,8 @@ public class StudentService {
             throw new IllegalArgumentException("Прізвище студента не може бути порожнім.");
         if (student.getGroup() == null || student.getGroup().trim().isEmpty())
             throw new IllegalArgumentException("Група студента не може бути порожною.");
-        if (student.getStudyYear() <= 0 || student.getStudyYear() > 7)
-            throw new IllegalArgumentException("Курс навчання повинен бути від 1 до 7.");
+        if (student.getStudyYear() <= 0 || student.getStudyYear() > 6)
+            throw new IllegalArgumentException("Курс навчання повинен бути від 1 до 6.");
         if (student.getStudyForm() == null)
             throw new IllegalArgumentException("Форма навчання не може бути null.");
         if (student.getStudentStatus() == null)

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Locale;
 
 public class MainMenu {
 
@@ -155,10 +156,18 @@ public class MainMenu {
     }
 
     private void universityMenu() {
-        System.out.println("Університет: " + university);
-        System.out.println("Факультети: ");
-        for (Faculty faculty : university.getFaculties()) {
-            System.out.println(faculty);
+        while (true) {
+            System.out.println("Університет: " + university);
+            System.out.println("Факультети: ");
+            for (Faculty faculty : university.getFaculties()) {
+                System.out.println(faculty);
+            }
+            System.out.println("0. Назад");
+            System.out.print("Обрати: ");
+            if ("0".equals(scanner.nextLine().trim())) {
+                return;
+            }
+            System.out.println("Невірний вибір. Введіть 0 для повернення.");
         }
     }
 
@@ -214,6 +223,26 @@ public class MainMenu {
     private void deleteFaculty() {
         Faculty faculty = selectFaculty();
         if (faculty == null) return;
+
+        int departmentsCount = faculty.getDepartments().size();
+        int studentsCount = faculty.getDepartments().stream().mapToInt(d -> d.getStudents().size()).sum();
+        int teachersCount = faculty.getDepartments().stream().mapToInt(d -> d.getTeachers().size()).sum();
+
+        if (!confirmAction("Видалити факультет '" + faculty.getFullName() + "' разом із " +
+                departmentsCount + " кафедрами, " + studentsCount + " студентами та " +
+                teachersCount + " викладачами?")) {
+            System.out.println("Скасовано.");
+            return;
+        }
+
+        for (Department dep : faculty.getDepartments()) {
+            for (Student student : dep.getStudents()) {
+                studentService.deleteStudentById(student.getId());
+            }
+            for (Teacher teacher : dep.getTeachers()) {
+                teacherService.deleteTeacherById(teacher.getId());
+            }
+        }
         university.getFaculties().remove(faculty);
         persist();
         System.out.println("Видалено.");
@@ -227,8 +256,10 @@ public class MainMenu {
         for (int i = 0; i < university.getFaculties().size(); i++) {
             System.out.println((i + 1) + ". " + university.getFaculties().get(i).getFullName());
         }
+        System.out.println("0. Скасувати");
         System.out.print("Обрати номер факультету: ");
-        int num = readInt(1, university.getFaculties().size());
+        int num = readInt(0, university.getFaculties().size());
+        if (num == 0) return null;
         return university.getFaculties().get(num - 1);
     }
 
@@ -280,6 +311,19 @@ public class MainMenu {
     private void deleteDepartment(Faculty faculty) {
         Department dep = selectDepartment(faculty);
         if (dep == null) return;
+
+        if (!confirmAction("Видалити кафедру '" + dep.getName() + "' разом із " + dep.getStudents().size() +
+                " студентами та " + dep.getTeachers().size() + " викладачами?")) {
+            System.out.println("Скасовано.");
+            return;
+        }
+
+        for (Student student : dep.getStudents()) {
+            studentService.deleteStudentById(student.getId());
+        }
+        for (Teacher teacher : dep.getTeachers()) {
+            teacherService.deleteTeacherById(teacher.getId());
+        }
         faculty.getDepartments().remove(dep);
         persist();
         System.out.println("Видалено.");
@@ -293,8 +337,10 @@ public class MainMenu {
         for (int i = 0; i < faculty.getDepartments().size(); i++) {
             System.out.println((i + 1) + ". " + faculty.getDepartments().get(i).getName());
         }
+        System.out.println("0. Скасувати");
         System.out.print("Обрати номер кафедри: ");
-        int num = readInt(1, faculty.getDepartments().size());
+        int num = readInt(0, faculty.getDepartments().size());
+        if (num == 0) return null;
         return faculty.getDepartments().get(num - 1);
     }
 
@@ -307,6 +353,7 @@ public class MainMenu {
             System.out.println("2. Редагувати студента");
             System.out.println("3. Видалити студента");
             System.out.println("0. Вихід");
+            System.out.print("Обрати: ");
             String choice = scanner.nextLine().trim();
             switch (choice) {
                 case "1" -> addStudent(dep);
@@ -331,7 +378,7 @@ public class MainMenu {
         Student student = new Student(UUID.randomUUID().toString(), firstName, lastName, patronymic, java.time.LocalDate.now(), "", "", studentId, group, StudyForm.BUDGET, StudentStatus.ACTIVE, studyYear, 2023);
 
         dep.getStudents().add(student);
-        studentService.saveStudent(student); // Додано збереження в репозиторій
+        studentService.saveStudent(student);
         persist();
 
         System.out.println("Додано.");
@@ -352,8 +399,13 @@ public class MainMenu {
         Student student = selectStudent(dep);
         if (student == null) return;
 
+        if (!confirmAction("Видалити студента " + student.getFirstName() + " " + student.getLastName() + "?")) {
+            System.out.println("Скасовано.");
+            return;
+        }
+
         dep.getStudents().remove(student);
-        studentService.deleteStudentById(student.getStudentId()); // Додано видалення з репозиторію
+        studentService.deleteStudentById(student.getId());
         persist();
 
         System.out.println("Видалено.");
@@ -368,8 +420,10 @@ public class MainMenu {
             Student s = dep.getStudents().get(i);
             System.out.println((i + 1) + ". " + s.getFirstName() + " " + s.getLastName());
         }
+        System.out.println("0. Скасувати");
         System.out.print("Обрати номер студента: ");
-        int idx = readInt(1, dep.getStudents().size());
+        int idx = readInt(0, dep.getStudents().size());
+        if (idx == 0) return null;
         return dep.getStudents().get(idx - 1);
     }
 
@@ -417,6 +471,7 @@ public class MainMenu {
 
         Teacher teacher = new Teacher(UUID.randomUUID().toString(), firstName, lastName, patronymic, LocalDate.now(), "", "", position, degree, title, LocalDate.now(), rate);
         dep.getTeachers().add(teacher);
+        teacherService.saveTeacher(teacher);
         persist();
         System.out.println("Додано.");
     }
@@ -430,6 +485,7 @@ public class MainMenu {
         teacher.setLastName(readNonEmpty());
         System.out.print("Нове по батькові (поточне: " + teacher.getPatronymic() + "): ");
         teacher.setPatronymic(readNonEmpty());
+        teacherService.updateTeacher(teacher);
         persist();
         System.out.println("Відредаговано.");
     }
@@ -437,7 +493,14 @@ public class MainMenu {
     private void deleteTeacher(Department dep) {
         Teacher teacher = selectTeacher(dep);
         if (teacher == null) return;
+
+        if (!confirmAction("Видалити викладача " + teacher.getFirstName() + " " + teacher.getLastName() + "?")) {
+            System.out.println("Скасовано.");
+            return;
+        }
+
         dep.getTeachers().remove(teacher);
+        teacherService.deleteTeacherById(teacher.getId());
         persist();
         System.out.println("Видалено: " + teacher.getFirstName() + " " + teacher.getLastName());
     }
@@ -455,8 +518,10 @@ public class MainMenu {
             Teacher t = dep.getTeachers().get(i);
             System.out.println((i + 1) + ". " + t.getFirstName() + " " + t.getLastName());
         }
+        System.out.println("0. Скасувати");
         System.out.print("Обрати номер викладача: ");
-        int idx = readInt(1, dep.getTeachers().size());
+        int idx = readInt(0, dep.getTeachers().size());
+        if (idx == 0) return null;
         return dep.getTeachers().get(idx - 1);
     }
 
@@ -468,6 +533,8 @@ public class MainMenu {
             System.out.println("3. Звіт: Студенти за статусом");
             System.out.println("4. Звіт: Викладачі за посадою");
             System.out.println("5. Звіт: Викладачі за науковим ступенем");
+            System.out.println("6. Звіт: Всі факультети");
+            System.out.println("7. Звіт: Всі кафедри за факультетами");
             System.out.println("0. Назад");
             System.out.print("Обрати: ");
 
@@ -478,6 +545,8 @@ public class MainMenu {
                 case "3" -> printStudentsByStatus();
                 case "4" -> printTeachersByPosition();
                 case "5" -> printTeachersByDegree();
+                case "6" -> printAllFacultiesReport();
+                case "7" -> printDepartmentsGroupedByFacultyReport();
                 case "0" -> { return; }
                 default -> System.out.println("Невірний вибір.");
             }
@@ -489,12 +558,14 @@ public class MainMenu {
         System.out.println("1. Ім'я/Прізвище/По-Батькові");
         System.out.println("2. Курс");
         System.out.println("3. Група");
+        System.out.println("0. Назад");
         System.out.print("-> ");
         String type = scanner.nextLine().trim();
 
         List<StudentDTO> results;
 
         switch (type){
+            case "0" -> { return; }
             case "1" -> {
                 System.out.print("Введіть Ім'я/Прізвище/По-Батькові: ");
                 results = studentService.findStudentByLnFnMn(readNonEmpty());
@@ -600,6 +671,42 @@ public class MainMenu {
         }
     }
 
+    private void printAllFacultiesReport() {
+        System.out.println("\nЗвіт: Всі факультети");
+        List<Faculty> faculties = universityService.getAllFaculties();
+
+        if (faculties.isEmpty()) {
+            System.out.println("Факультетів немає.");
+            return;
+        }
+
+        for (Faculty faculty : faculties) {
+            System.out.println("- " + faculty.getFullName() + " (" + faculty.getShortName() + ")");
+        }
+    }
+
+    private void printDepartmentsGroupedByFacultyReport() {
+        System.out.println("\nЗвіт: Всі кафедри за факультетами");
+        List<Faculty> faculties = universityService.getAllFaculties();
+
+        if (faculties.isEmpty()) {
+            System.out.println("Факультетів немає.");
+            return;
+        }
+
+        for (Faculty faculty : faculties) {
+            System.out.println("\n ======== " + faculty.getFullName() + " (" + faculty.getShortName() + ") ========");
+            if (faculty.getDepartments().isEmpty()) {
+                System.out.println("  Кафедр немає.");
+                continue;
+            }
+
+            for (Department dep : faculty.getDepartments()) {
+                System.out.println("  - " + dep.getName() + " | " + dep.getLocation());
+            }
+        }
+    }
+
     private String readNonEmpty() {
         while (true) {
             String input = scanner.nextLine().trim();
@@ -619,6 +726,20 @@ public class MainMenu {
             } catch (NumberFormatException e) {
                 System.out.print("Невірний вибір. ");
             }
+        }
+    }
+
+    private boolean confirmAction(String message) {
+        while (true) {
+            System.out.print(message + " (так/ні): ");
+            String answer = scanner.nextLine().trim().toLowerCase(Locale.ROOT);
+            if (answer.equals("так") || answer.equals("т") || answer.equals("y") || answer.equals("yes")) {
+                return true;
+            }
+            if (answer.equals("ні") || answer.equals("н") || answer.equals("n") || answer.equals("no")) {
+                return false;
+            }
+            System.out.println("Введіть 'так' або 'ні'.");
         }
     }
 }
