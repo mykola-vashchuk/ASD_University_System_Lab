@@ -63,7 +63,7 @@ public class Main {
                 break;
             }
             System.out.println("Авторизація успішна: " + user.username() + " " + user.role());
-            MainMenu menu = new MainMenu(universityService, studentService, teacherService, authorizationService, user, storage, autoSaveService);
+            MainMenu menu = new MainMenu(universityService, studentService, teacherService, authorizationService, user, autoSaveService);
             boolean logout = menu.show();
             if (!logout) {
                 autoSaveService.stop();

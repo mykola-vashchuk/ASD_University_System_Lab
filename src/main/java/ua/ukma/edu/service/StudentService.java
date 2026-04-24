@@ -1,5 +1,6 @@
 package ua.ukma.edu.service;
 
+import ua.ukma.edu.domain.Department;
 import ua.ukma.edu.domain.Student;
 import ua.ukma.edu.domain.StudentStatus;
 import ua.ukma.edu.dto.StudentDTO;
@@ -39,9 +40,99 @@ public class StudentService {
         studentRepository.save(student);
     }
 
+    public Student updateStudent(Student student) {
+        validateStudent(student);
+        return studentRepository.update(student);
+    }
+
     public void deleteStudentById(String id) {
         String normalizedId = validateId(id);
         studentRepository.deleteById(normalizedId);
+    }
+
+    public Student changeStudentStatus(String id, StudentStatus newStatus) {
+        Student student = findById(id);
+        if (newStatus == null) {
+            throw new IllegalArgumentException("Статус студента не може бути null.");
+        }
+        student.setStudentStatus(newStatus);
+        return updateStudent(student);
+    }
+
+    public Student changeStudentCourse(String id, int newStudyYear) {
+        if (newStudyYear < 1 || newStudyYear > 6) {
+            throw new IllegalArgumentException("Курс навчання повинен бути від 1 до 6.");
+        }
+        Student student = findById(id);
+        student.setStudyYear(newStudyYear);
+        return updateStudent(student);
+    }
+
+    public Student changeStudentGroup(String id, String newGroup) {
+        if (newGroup == null || newGroup.trim().isEmpty()) {
+            throw new IllegalArgumentException("Група студента не може бути порожною.");
+        }
+        Student student = findById(id);
+        student.setGroup(newGroup.trim());
+        return updateStudent(student);
+    }
+
+    public Student transferStudent(String id, int newStudyYear, String newGroup) {
+        if (newStudyYear < 1 || newStudyYear > 6) {
+            throw new IllegalArgumentException("Курс навчання повинен бути від 1 до 6.");
+        }
+        if (newGroup == null || newGroup.trim().isEmpty()) {
+            throw new IllegalArgumentException("Група студента не може бути порожною.");
+        }
+
+        Student student = findById(id);
+        student.setStudyYear(newStudyYear);
+        student.setGroup(newGroup.trim());
+        return updateStudent(student);
+    }
+
+    public Student transferStudent(String id, Department sourceDepartment, Department targetDepartment) {
+        return transferStudent(id, sourceDepartment, targetDepartment, null, null);
+    }
+
+    public Student transferStudent(String id,
+                                   Department sourceDepartment,
+                                   Department targetDepartment,
+                                   Integer newStudyYear,
+                                   String newGroup) {
+        Objects.requireNonNull(sourceDepartment, "Поточна кафедра не може бути null.");
+        Objects.requireNonNull(targetDepartment, "Цільова кафедра не може бути null.");
+
+        Student student = findById(id);
+
+        if (!sourceDepartment.getStudents().contains(student)) {
+            throw new IllegalArgumentException("Студента не знайдено в поточній кафедрі.");
+        }
+
+        if (sourceDepartment.equals(targetDepartment)) {
+            if (newStudyYear != null) {
+                changeStudentCourse(id, newStudyYear);
+            }
+            if (newGroup != null) {
+                changeStudentGroup(id, newGroup);
+            }
+            return student;
+        }
+
+        sourceDepartment.getStudents().remove(student);
+        targetDepartment.getStudents().add(student);
+
+        if (newStudyYear != null) {
+            if (newStudyYear < 1 || newStudyYear > 6) {
+                throw new IllegalArgumentException("Курс навчання повинен бути від 1 до 6.");
+            }
+            student.setStudyYear(newStudyYear);
+        }
+        if (newGroup != null && !newGroup.trim().isEmpty()) {
+            student.setGroup(newGroup.trim());
+        }
+
+        return updateStudent(student);
     }
 
     public List<StudentDTO> findStudentByLnFnMn(String value){
@@ -59,7 +150,7 @@ public class StudentService {
     }
     public List<StudentDTO> getStudentsSortedByYear(){
         return studentRepository.findAll().stream()
-                .sorted((s1, s2) -> Integer.compare(s1.getStudyYear(), s2.getStudyYear()))
+                .sorted(Comparator.comparingInt(Student::getStudyYear))
                 .map(StudentMapper::toDTO)
                 .toList();
     }

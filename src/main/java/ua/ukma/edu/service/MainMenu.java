@@ -6,7 +6,6 @@ import ua.ukma.edu.authorization.User;
 import ua.ukma.edu.domain.*;
 import ua.ukma.edu.dto.StudentDTO;
 import ua.ukma.edu.persistence.AutoSaveService;
-import ua.ukma.edu.persistence.UniversityStorage;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -23,17 +22,15 @@ public class MainMenu {
     private final TeacherService teacherService;
     private final AuthorizationService authorizationService;
     private final User currentUser;
-    private final UniversityStorage storage;
     private final AutoSaveService autoSaveService;
 
-    public MainMenu(UniversityService universityService, StudentService studentService, TeacherService teacherService, AuthorizationService authorizationService, User currentUser, UniversityStorage storage, AutoSaveService autoSaveService) {
+    public MainMenu(UniversityService universityService, StudentService studentService, TeacherService teacherService, AuthorizationService authorizationService, User currentUser, AutoSaveService autoSaveService) {
         this.universityService = universityService;
         this.university = universityService.getUniversity();
         this.studentService = studentService;
         this.teacherService = teacherService;
         this.authorizationService = authorizationService;
         this.currentUser = currentUser;
-        this.storage = storage;
         this.autoSaveService = autoSaveService;
         this.scanner = new Scanner(System.in);
     }
@@ -387,12 +384,110 @@ public class MainMenu {
     private void editStudent(Department dep) {
         Student student = selectStudent(dep);
         if (student == null) return;
-        System.out.print("Нове ім'я (поточне: " + student.getFirstName() + "): ");
-        student.setFirstName(readNonEmptyLettersOnly());
-        System.out.print("Нове прізвище (поточне: " + student.getLastName() + "): ");
-        student.setLastName(readNonEmptyLettersOnly());
+
+        while (true) {
+            System.out.println("Редагування студента: " + student.getFirstName() + " " + student.getLastName());
+            System.out.println("1. Змінити ім'я");
+            System.out.println("2. Змінити прізвище");
+            System.out.println("3. Змінити по батькові");
+            System.out.println("4. Змінити статус");
+            System.out.println("5. Змінити курс");
+            System.out.println("6. Змінити групу");
+            System.out.println("7. Перевести (курс + група)");
+            System.out.println("8. Перевести до іншої кафедри/факультету");
+            System.out.println("0. Назад");
+            System.out.print("Обрати: ");
+
+            switch (scanner.nextLine().trim()) {
+                case "1" -> {
+                    System.out.print("Нове ім'я (поточне: " + student.getFirstName() + "): ");
+                    student.setFirstName(readNonEmptyLettersOnly());
+                    studentService.updateStudent(student);
+                    persist();
+                    System.out.println("Ім'я оновлено.");
+                }
+                case "2" -> {
+                    System.out.print("Нове прізвище (поточне: " + student.getLastName() + "): ");
+                    student.setLastName(readNonEmptyLettersOnly());
+                    studentService.updateStudent(student);
+                    persist();
+                    System.out.println("Прізвище оновлено.");
+                }
+                case "3" -> {
+                    System.out.print("Нове по батькові (поточне: " + student.getPatronymic() + "): ");
+                    student.setPatronymic(readNonEmptyLettersOnly());
+                    studentService.updateStudent(student);
+                    persist();
+                    System.out.println("По батькові оновлено.");
+                }
+                case "4" -> {
+                    System.out.println("Новий статус:");
+                    StudentStatus[] statuses = StudentStatus.values();
+                    for (int i = 0; i < statuses.length; i++) {
+                        System.out.println((i + 1) + ". " + statuses[i]);
+                    }
+                    System.out.print("Обрати: ");
+                    StudentStatus status = statuses[readInt(1, statuses.length) - 1];
+                    studentService.changeStudentStatus(student.getId(), status);
+                    persist();
+                    System.out.println("Статус оновлено.");
+                }
+                case "5" -> {
+                    System.out.print("Новий курс (1-6): ");
+                    int course = readInt(1, 6);
+                    studentService.changeStudentCourse(student.getId(), course);
+                    persist();
+                    System.out.println("Курс оновлено.");
+                }
+                case "6" -> {
+                    System.out.print("Нова група: ");
+                    String group = readNonEmpty();
+                    studentService.changeStudentGroup(student.getId(), group);
+                    persist();
+                    System.out.println("Групу оновлено.");
+                }
+                case "7" -> {
+                    System.out.print("Новий курс (1-6): ");
+                    int course = readInt(1, 6);
+                    System.out.print("Нова група: ");
+                    String group = readNonEmpty();
+                    studentService.transferStudent(student.getId(), course, group);
+                    persist();
+                    System.out.println("Студента переведено.");
+                }
+                case "8" -> transferStudentToAnotherDepartment(student, dep);
+                case "0" -> { return; }
+                default -> System.out.println("Невірний вибір.");
+            }
+        }
+    }
+
+    private void transferStudentToAnotherDepartment(Student student, Department sourceDepartment) {
+        Faculty targetFaculty = selectFaculty();
+        if (targetFaculty == null) return;
+
+        Department targetDepartment = selectDepartment(targetFaculty);
+        if (targetDepartment == null) return;
+
+        if (!confirmAction("Перевести студента " + student.getFirstName() + " " + student.getLastName() +
+                " з кафедри '" + sourceDepartment.getName() + "' до кафедри '" + targetDepartment.getName() + "'?")) {
+            System.out.println("Скасовано.");
+            return;
+        }
+
+        Integer newCourse = null;
+        String newGroup = null;
+
+        if (confirmAction("Під час переведення змінити курс або групу?")) {
+            System.out.print("Новий курс (1-6): ");
+            newCourse = readInt(1, 6);
+            System.out.print("Нова група: ");
+            newGroup = readNonEmpty();
+        }
+
+        studentService.transferStudent(student.getId(), sourceDepartment, targetDepartment, newCourse, newGroup);
         persist();
-        System.out.println("Відредаговано.");
+        System.out.println("Студента переведено до іншої кафедри/факультету.");
     }
 
     private void deleteStudent(Department dep) {
