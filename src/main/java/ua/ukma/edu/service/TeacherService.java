@@ -1,6 +1,8 @@
 package ua.ukma.edu.service;
 
 import ua.ukma.edu.domain.Teacher;
+import ua.ukma.edu.domain.Position;
+import ua.ukma.edu.domain.ScientificDegree;
 import ua.ukma.edu.exception.EntityNotFoundException;
 import ua.ukma.edu.repository.Repository;
 
@@ -8,8 +10,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TeacherService {
     private final Repository<Teacher, String> teacherRepository;
@@ -65,6 +69,22 @@ public class TeacherService {
     public void deleteTeacherById(String id) {
         String normalizedId = validateId(id);
         teacherRepository.deleteById(normalizedId);
+    }
+
+    public Map<Position, List<Teacher>> getTeachersGroupedByPosition(){
+        return getAllTeachers().stream()
+                .collect(Collectors.groupingBy(
+                        Teacher::getPosition,
+                        Collectors.toList()
+                ));
+    }
+
+    public Map<ScientificDegree, List<Teacher>> getTeachersGroupedByDegree(){
+        return getAllTeachers().stream()
+                .collect(Collectors.groupingBy(
+                        Teacher::getDegree,
+                        Collectors.toList()
+                ));
     }
 
     private String validateId(String id) {

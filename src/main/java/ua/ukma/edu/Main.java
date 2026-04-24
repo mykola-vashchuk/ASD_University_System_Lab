@@ -7,8 +7,10 @@ import ua.ukma.edu.persistence.AutoSaveService;
 import ua.ukma.edu.persistence.UniversityStorage;
 import ua.ukma.edu.repository.Repository;
 import ua.ukma.edu.repository.StudentRepository;
+import ua.ukma.edu.repository.TeacherRepository;
 import ua.ukma.edu.service.MainMenu;
 import ua.ukma.edu.service.StudentService;
+import ua.ukma.edu.service.TeacherService;
 import ua.ukma.edu.service.UniversityService;
 
 import java.time.LocalDate;
@@ -33,9 +35,20 @@ public class Main {
             }
         }
 
+        // ініціалізація репозиторію з викладачами з поточного стану університету
+        Repository<Teacher, String> teacherRepository = new TeacherRepository();
+        for (Faculty faculty : naukma.getFaculties()) {
+            for (Department department : faculty.getDepartments()) {
+                for (Teacher teacher : department.getTeachers()) {
+                    teacherRepository.save(teacher);
+                }
+            }
+        }
+
         // ініціалізація сервісів
         UniversityService universityService = new UniversityService(naukma);
         StudentService studentService = new StudentService(studentRepository);
+        TeacherService teacherService = new TeacherService(teacherRepository);
         AuthorizationService authorizationService = new AuthorizationService();
         AutoSaveService autoSaveService = new AutoSaveService(storage, universityService::getUniversity, 30);
         autoSaveService.start();
@@ -50,7 +63,7 @@ public class Main {
                 break;
             }
             System.out.println("Авторизація успішна: " + user.username() + " " + user.role());
-            MainMenu menu = new MainMenu(universityService, studentService, authorizationService, user, storage, autoSaveService);
+            MainMenu menu = new MainMenu(universityService, studentService, teacherService, authorizationService, user, storage, autoSaveService);
             boolean logout = menu.show();
             if (!logout) {
                 autoSaveService.stop();

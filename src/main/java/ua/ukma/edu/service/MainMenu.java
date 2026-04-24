@@ -19,15 +19,17 @@ public class MainMenu {
     private final University university;
     private final UniversityService universityService;
     private final StudentService studentService;
+    private final TeacherService teacherService;
     private final AuthorizationService authorizationService;
     private final User currentUser;
     private final UniversityStorage storage;
     private final AutoSaveService autoSaveService;
 
-    public MainMenu(UniversityService universityService, StudentService studentService, AuthorizationService authorizationService, User currentUser, UniversityStorage storage, AutoSaveService autoSaveService) {
+    public MainMenu(UniversityService universityService, StudentService studentService, TeacherService teacherService, AuthorizationService authorizationService, User currentUser, UniversityStorage storage, AutoSaveService autoSaveService) {
         this.universityService = universityService;
         this.university = universityService.getUniversity();
         this.studentService = studentService;
+        this.teacherService = teacherService;
         this.authorizationService = authorizationService;
         this.currentUser = currentUser;
         this.storage = storage;
@@ -462,7 +464,10 @@ public class MainMenu {
         while (true) {
             System.out.println("\n Пошук та Звіти ");
             System.out.println("1. Знайти студента (за Прізвищем, Курсом або Групою)");
-            System.out.println("2. Звіт: Всі студенти за курсами (від 1 до 6)");
+            System.out.println("2. Звіт: Всі студенти за курсами");
+            System.out.println("3. Звіт: Студенти за статусом");
+            System.out.println("4. Звіт: Викладачі за посадою");
+            System.out.println("5. Звіт: Викладачі за науковим ступенем");
             System.out.println("0. Назад");
             System.out.print("Обрати: ");
 
@@ -470,6 +475,9 @@ public class MainMenu {
             switch (choice) {
                 case "1" -> findStudent();
                 case "2" -> printAllStudentsSortedByCourse();
+                case "3" -> printStudentsByStatus();
+                case "4" -> printTeachersByPosition();
+                case "5" -> printTeachersByDegree();
                 case "0" -> { return; }
                 default -> System.out.println("Невірний вибір.");
             }
@@ -547,6 +555,51 @@ public class MainMenu {
         }
     }
 
+    private void printStudentsByStatus(){
+        System.out.println("\nЗвіт: Студенти за статусом");
+        var grouped = studentService.getStudentsGroupedByStatus();
+        if (grouped.isEmpty()) {
+            System.out.println("Студентів немає.");
+        } else {
+            for (var entry : grouped.entrySet()) {
+                System.out.println("\n ======== СТАТУС: " + entry.getKey() + " ==========================");
+                for (StudentDTO s : entry.getValue()) {
+                    System.out.println("  - " + s.firstName() + " " + s.lastName() + " (курс " + s.studyYear() + ", група " + s.group() + ")");
+                }
+            }
+        }
+    }
+
+    private void printTeachersByPosition(){
+        System.out.println("\nЗвіт: Викладачі за посадою");
+        var grouped = teacherService.getTeachersGroupedByPosition();
+        if (grouped.isEmpty()) {
+            System.out.println("Викладачів немає.");
+        } else {
+            for (var entry : grouped.entrySet()) {
+                System.out.println("\n ======== ПОСАДА: " + entry.getKey() + " ==========================");
+                for (Teacher t : entry.getValue()) {
+                    System.out.println("  - " + t.getFirstName() + " " + t.getLastName() + " (стаж: " + t.getExperienceYear() + " років)");
+                }
+            }
+        }
+    }
+
+    private void printTeachersByDegree(){
+        System.out.println("\nЗвіт: Викладачі за науковим ступенем");
+        var grouped = teacherService.getTeachersGroupedByDegree();
+        if (grouped.isEmpty()) {
+            System.out.println("Викладачів немає.");
+        } else {
+            for (var entry : grouped.entrySet()) {
+                System.out.println("\n ======== СТУПІНЬ: " + entry.getKey() + " ==========================");
+                for (Teacher t : entry.getValue()) {
+                    System.out.println("  - " + t.getFirstName() + " " + t.getLastName() + " (" + t.getAcademicTitle() + ")");
+                }
+            }
+        }
+    }
+
     private String readNonEmpty() {
         while (true) {
             String input = scanner.nextLine().trim();
@@ -569,3 +622,4 @@ public class MainMenu {
         }
     }
 }
+

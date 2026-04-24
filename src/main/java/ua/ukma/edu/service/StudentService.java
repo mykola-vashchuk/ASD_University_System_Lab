@@ -1,6 +1,7 @@
 package ua.ukma.edu.service;
 
 import ua.ukma.edu.domain.Student;
+import ua.ukma.edu.domain.StudentStatus;
 import ua.ukma.edu.dto.StudentDTO;
 import ua.ukma.edu.dto.StudentMapper;
 import ua.ukma.edu.exception.EntityNotFoundException;
@@ -9,6 +10,8 @@ import ua.ukma.edu.repository.Repository;
 import java.util.*;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class StudentService {
     private final Repository<Student, String> studentRepository;
@@ -74,6 +77,21 @@ public class StudentService {
                 .filter(student -> student.getGroup() != null && student.getGroup().toLowerCase(Locale.ROOT).contains(searchFor))
                 .map(StudentMapper::toDTO)
                 .toList();
+    }
+    public Map<Integer, List<StudentDTO>> getStudentsGroupedByYear(){
+        return studentRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        Student::getStudyYear,
+                        Collectors.mapping(StudentMapper::toDTO, Collectors.toList())
+                ));
+    }
+
+    public Map<StudentStatus, List<StudentDTO>> getStudentsGroupedByStatus(){
+        return studentRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        Student::getStudentStatus,
+                        Collectors.mapping(StudentMapper::toDTO, Collectors.toList())
+                ));
     }
 
     private String validateId(String id) {
