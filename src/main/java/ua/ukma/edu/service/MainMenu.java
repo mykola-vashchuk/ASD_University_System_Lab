@@ -193,9 +193,9 @@ public class MainMenu {
 
     private void createFaculty() {
         System.out.print("Назва факультету: ");
-        String fullName = readNonEmpty();
+        String fullName = readNonEmptyLettersOnly();
         System.out.print("Скорочена назва: ");
-        String shortName = readNonEmpty();
+        String shortName = readNonEmptyLettersOnly();
         System.out.print("Контакти: ");
         String contacts = readNonEmpty();
         Faculty faculty = new Faculty(UUID.randomUUID().toString(), fullName, shortName, contacts, new java.util.ArrayList<>());
@@ -208,9 +208,9 @@ public class MainMenu {
         Faculty faculty = selectFaculty();
         if (faculty == null) return;
         System.out.print("Нова назва факультету (поточна: " + faculty.getFullName() + "): ");
-        String fullName = readNonEmpty();
+        String fullName = readNonEmptyLettersOnly();
         System.out.print("Нова скорочена назва (поточна: " + faculty.getShortName() + "): ");
-        String shortName = readNonEmpty();
+        String shortName = readNonEmptyLettersOnly();
         System.out.print("Нові контакти (поточні: " + faculty.getContacts() + "): ");
         String contacts = readNonEmpty();
         faculty.setFullName(fullName);
@@ -286,9 +286,9 @@ public class MainMenu {
 
     private void createDepartment(Faculty faculty) {
         System.out.print("Назва кафедри: ");
-        String name = readNonEmpty();
+        String name = readNonEmptyLettersOnly();
         System.out.print("Локація: ");
-        String location = readNonEmpty();
+        String location = readNonEmptyLettersOnly();
         Department department = new Department(UUID.randomUUID().toString(), name, location, new Teacher());
         faculty.getDepartments().add(department);
         persist();
@@ -299,9 +299,9 @@ public class MainMenu {
         Department dep = selectDepartment(faculty);
         if (dep == null) return;
         System.out.print("Нова назва (поточна: " + dep.getName() + "): ");
-        String name = readNonEmpty();
+        String name = readNonEmptyLettersOnly();
         System.out.print("Нова локація (поточна: " + dep.getLocation() + "): ");
-        String location = readNonEmpty();
+        String location = readNonEmptyLettersOnly();
         dep.setName(name);
         dep.setLocation(location);
         persist();
@@ -366,9 +366,9 @@ public class MainMenu {
     }
 
     private void addStudent(Department dep) {
-        System.out.print("Ім'я: "); String firstName = readNonEmpty();
-        System.out.print("Прізвище: "); String lastName = readNonEmpty();
-        System.out.print("По батькові: "); String patronymic = readNonEmpty();
+        System.out.print("Ім'я: "); String firstName = readNonEmptyLettersOnly();
+        System.out.print("Прізвище: "); String lastName = readNonEmptyLettersOnly();
+        System.out.print("По батькові: "); String patronymic = readNonEmptyLettersOnly();
         System.out.print("Студентський ID: "); String studentId = readNonEmpty();
         System.out.print("Група (1-6): ");
         int groupNumber = readInt(1, 6);
@@ -388,9 +388,9 @@ public class MainMenu {
         Student student = selectStudent(dep);
         if (student == null) return;
         System.out.print("Нове ім'я (поточне: " + student.getFirstName() + "): ");
-        student.setFirstName(readNonEmpty());
+        student.setFirstName(readNonEmptyLettersOnly());
         System.out.print("Нове прізвище (поточне: " + student.getLastName() + "): ");
-        student.setLastName(readNonEmpty());
+        student.setLastName(readNonEmptyLettersOnly());
         persist();
         System.out.println("Відредаговано.");
     }
@@ -456,11 +456,11 @@ public class MainMenu {
 
     private void addTeacher(Department dep) {
         System.out.print("Ім'я: ");
-        String firstName = readNonEmpty();
+        String firstName = readNonEmptyLettersOnly();
         System.out.print("Прізвище: ");
-        String lastName = readNonEmpty();
+        String lastName = readNonEmptyLettersOnly();
         System.out.print("По батькові: ");
-        String patronymic = readNonEmpty();
+        String patronymic = readNonEmptyLettersOnly();
         System.out.print("Позиція (0-5: ASSISTANT, LECTURER, SENIOR_LECTURER, ASSOCIATE_PROFESSOR, PROFESSOR, HEAD_OF_DEPARTMENT): ");
         Position position = Position.values()[readInt(0, Position.values().length - 1)];
         System.out.print("Науковий ступінь (0-3: BACHELOR, MASTER, PHD, DOCTOR_OF_SCIENCE): ");
@@ -480,11 +480,11 @@ public class MainMenu {
         Teacher teacher = selectTeacher(dep);
         if (teacher == null) return;
         System.out.print("Нове ім'я (поточне: " + teacher.getFirstName() + "): ");
-        teacher.setFirstName(readNonEmpty());
+        teacher.setFirstName(readNonEmptyLettersOnly());
         System.out.print("Нове прізвище (поточне: " + teacher.getLastName() + "): ");
-        teacher.setLastName(readNonEmpty());
+        teacher.setLastName(readNonEmptyLettersOnly());
         System.out.print("Нове по батькові (поточне: " + teacher.getPatronymic() + "): ");
-        teacher.setPatronymic(readNonEmpty());
+        teacher.setPatronymic(readNonEmptyLettersOnly());
         teacherService.updateTeacher(teacher);
         persist();
         System.out.println("Відредаговано.");
@@ -568,7 +568,7 @@ public class MainMenu {
             case "0" -> { return; }
             case "1" -> {
                 System.out.print("Введіть Ім'я/Прізвище/По-Батькові: ");
-                results = studentService.findStudentByLnFnMn(readNonEmpty());
+                results = studentService.findStudentByLnFnMn(readNonEmptyLettersOnly());
             }
             case "2" -> {
                 System.out.print("Введіть курс: ");
@@ -716,6 +716,21 @@ public class MainMenu {
         }
     }
 
+    private String readNonEmptyLettersOnly() {
+        while (true) {
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.print("Не може бути порожнім: ");
+                continue;
+            }
+            if(!input.matches("[a-zA-Zа-яА-ЯіІїЇєЄ\\s\\-']+")){
+                System.out.println("Вводити тільки літери, пробіли, - та '");
+                continue;
+            }
+            return input;
+        }
+    }
+
     private int readInt(int min, int max) {
         while (true) {
             try {
@@ -723,7 +738,8 @@ public class MainMenu {
                 if (val >= min && val <= max)
                     return val;
                 else System.out.print("Обрати в межах " + min + " - " + max + ": ");
-            } catch (NumberFormatException e) {
+            }
+            catch (NumberFormatException e) {
                 System.out.print("Невірний вибір. ");
             }
         }
@@ -743,4 +759,3 @@ public class MainMenu {
         }
     }
 }
-
