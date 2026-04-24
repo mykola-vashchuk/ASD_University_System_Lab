@@ -60,6 +60,7 @@ public class MainMenu {
             System.out.println("5. Робота з викладачем");
             System.out.println("6. Пошук та звіти");
             System.out.println("7. Користувачі");
+            System.out.println("8. Змінити роль");
             System.out.println("0. Вихід");
             System.out.print("Обрати: ");
             String choice = scanner.nextLine().trim();
@@ -86,6 +87,10 @@ public class MainMenu {
                     if(hasAccess(Roles.ADMIN))
                         userMenu();
                     else deny();}
+                case "8" -> {
+                    System.out.println("Змінення ролі...");
+                    return true;
+                }
                 case "0" -> running = false;
                 default -> System.out.println("Невірний вибір. Введіть коректне значення.");
             }

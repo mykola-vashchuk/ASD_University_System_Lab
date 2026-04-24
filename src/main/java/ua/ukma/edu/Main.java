@@ -38,6 +38,23 @@ public class Main {
         AuthorizationService authorizationService = new AuthorizationService();
         Scanner scanner = new Scanner(System.in);
 
+        while (true) {
+            User user = login(scanner, authorizationService);
+
+            if(user == null) {
+                System.out.println("Завершення роботи.");
+                break;
+            }
+            System.out.println("Авторизація успішна: " + user.username() + " " + user.role());
+            MainMenu menu = new MainMenu(universityService, studentService, authorizationService, user, storage);
+            boolean logout = menu.show();
+            if (!logout) {
+                break;
+            }
+        }
+    }
+
+    private static User login(Scanner scanner, AuthorizationService authorizationService) {
         User user = null;
 
         int attempts = 3;
@@ -60,14 +77,8 @@ public class Main {
 
         if(user == null){
             System.out.println("Кількість спроб вичерпана.");
-            return;
         }
-
-        System.out.println("Авторизація успішна: " + user.username() + " " + user.role());
-
-        // передача сервісів у меню
-        MainMenu menu = new MainMenu(universityService, studentService, authorizationService, user, storage);
-        menu.show();
+            return user;
     }
 
     private static University createDefaultUniversity() {
